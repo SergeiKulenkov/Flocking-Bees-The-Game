@@ -1,0 +1,12 @@
+/.vs
+/Engine/Binaries
+/Binaries
+/Intermediates
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+*.slnx
+/GameDemo/imgui.ini
+/Vendor/premake/bin/
+Scripts/__pycache__

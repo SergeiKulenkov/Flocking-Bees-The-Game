@@ -1,4 +1,4 @@
-project "Game"
+project "Flocking Bees The Game"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
@@ -9,9 +9,9 @@ project "Game"
 
    includedirs
    {
-      "%{IncludeDir.glfw}",
-      "%{IncludeDir.ImGUI}",
-      "%{IncludeDir.glm}",
+      "../Engine/Vendor/glm",
+      "../Engine/Vendor/glfw/include",
+      "../Engine/Vendor/ImGUI",
       "%{IncludeDir.VulkanSDK}",
       
       "../Engine/Engine/Source",

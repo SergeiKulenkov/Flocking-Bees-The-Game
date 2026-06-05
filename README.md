@@ -1,6 +1,7 @@
-# Game Template
-This template is based on the Game Engine repository, that's used as a submodule here.
+# Flocking Bees The Game
+This is a modification of the Flocking Bees project, so now it has the Engine base and can have a lot more features (like physics and data structures).
+
 # Setup
-1. Simply click the "Use this template" button or clone this repo
-2. Modify the Build.lua and Build-Game.lua files to change the name of the project
-3. Run the Scripts/Setup.bat to generate project files and VS solution file
+Simply run the Scripts/Setup.bat to generate project files and VS solution file.
+
+Based on the Game Template repository.

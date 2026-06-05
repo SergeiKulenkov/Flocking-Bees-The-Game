@@ -4,7 +4,7 @@
 
 ////////////////////
 
-static constexpr std::string_view windowTitle = "Game Demo";
+static constexpr std::string_view windowTitle = "Flocking Bees The Game";
 static constexpr uint16_t windowWidth = 1920;
 static constexpr uint16_t windowHeight = 1080;
 

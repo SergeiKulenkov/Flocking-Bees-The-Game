@@ -7,6 +7,6 @@
 *.vcxproj.filters
 *.sln
 *.slnx
-/GameDemo/imgui.ini
+*.ini
 /Vendor/premake/bin/
 Scripts/__pycache__

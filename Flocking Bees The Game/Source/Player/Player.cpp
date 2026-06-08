@@ -22,11 +22,6 @@ void Player::OnInit()
 	
 	AddComponent<CircleCollider>(colliderSize);
 	m_Rigidbody = AddComponent<Rigidbody>(1.f, linearDamping, restitution);
-
-	const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
-	ASSERT_SCENE_SHARED_PTR(sharedScene);
-	sharedScene->RegisterEditableDebugWindowField("Player's Max Speed", &m_MaxSpeed, maxSpeedLimit, 0.f, 2);
-	sharedScene->RegisterDebugWindowField("Player's Current Speed", &m_Speed, 2);
 }
 
 void Player::Update(float deltaTime)
@@ -61,20 +56,6 @@ void Player::Update(float deltaTime)
 void Player::OnCollision(const std::shared_ptr<Collision>& other)
 {
 	m_Speed = 0.f;
-
-	const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
-	ASSERT_SCENE_SHARED_PTR(sharedScene);
-	if (!other->entity.expired())
-	{
-		const std::shared_ptr<Entity> sharedEntity = other->entity.lock();
-		if (std::dynamic_pointer_cast<Wall>(sharedEntity) == nullptr)
-		{
-			sharedScene->DestroyEntity(sharedEntity->GetId());
-		}
-	}
-
-	// here also access the entity inside Collision and call its functions
-	// for example it can be an Obstacle, so call ChangeColour
 }
 
 glm::vec2 Player::GetMovementInput() const

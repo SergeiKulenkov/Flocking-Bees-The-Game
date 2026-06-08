@@ -2,12 +2,6 @@
 
 ////////////////////
 
-EnvironmentManager::EnvironmentManager()
-{
-	m_Boundaries.resize(numberOfInitialBoundaries);
-	m_Obstacles.resize(numberOfInitialObstacles);
-}
-
 void EnvironmentManager::OnInit()
 {
 	const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
@@ -36,19 +30,6 @@ void EnvironmentManager::OnInit()
 
 			newWall->Setup(position, size);
 			m_Boundaries[i] = newWall;
-		}
-	}
-
-	for (size_t i = 0; i < m_Obstacles.size(); i++)
-	{
-		newEntity = sharedScene->CreateEntity<Obstacle>();
-		const std::shared_ptr<Obstacle> newObstacle = std::dynamic_pointer_cast<Obstacle>(newEntity);
-
-		if (newObstacle != nullptr)
-		{
-			if (i % 2 == 0) newObstacle->Setup(ShapeType::Box, screenSize);
-			else newObstacle->Setup(ShapeType::Circle, screenSize);
-			m_Obstacles[i] = newObstacle;
 		}
 	}
 }

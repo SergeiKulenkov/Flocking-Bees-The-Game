@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "../Environment/EnvironmentManager.h"
+#include "../Boids/BoidsManager.h"
 #include "../Player/Player.h"
 
 ////////////////////
@@ -44,4 +45,5 @@ void Game::Start()
 #endif
 	m_Scene->CreateEntity<Player>();
 	m_Scene->CreateEntity<EnvironmentManager>();
+	m_Scene->CreateEntity<BoidsManager>();
 }

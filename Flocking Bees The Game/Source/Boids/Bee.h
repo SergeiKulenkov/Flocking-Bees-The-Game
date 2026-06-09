@@ -6,7 +6,7 @@
 class Bee : public BoidBase
 {
 public:
-	Bee() : BoidBase(beeImagePath, minSpeed, maxSpeed, obstacleAvoidanceSpeed) {}
+	Bee() : BoidBase(minSpeed, maxSpeed, obstacleAvoidanceSpeed) {}
 
 	virtual void Setup(const glm::vec2& screenSize, const uint16_t id) override;
 	virtual void Update(float deltaTime) override;

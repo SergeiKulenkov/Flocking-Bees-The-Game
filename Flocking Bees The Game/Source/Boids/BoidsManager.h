@@ -39,7 +39,7 @@ private:
 	static constexpr uint16_t numberOfBoids = 100;
 	static constexpr uint8_t numberOfPredators = 2;
 
-	static constexpr std::string_view drawDebugInfoText = "Draw Debug Info";
+	static constexpr std::string_view drawDebugInfoField = "Draw Debug Info";
 	static constexpr std::string_view numberOfBoidsText = "Number of Bodis";
 
 	static constexpr std::string_view perceptionRadiusText = "Perception Radius";

@@ -14,7 +14,6 @@ void BoidsManager::OnInit()
 	ASSERT_SCENE_SHARED_PTR(sharedScene);
 	const glm::vec2 screenSize = sharedScene->GetScreenSize();
 	std::shared_ptr<Entity> newEntity;
-	uint16_t id = 0;
 
 	// boids
 	{
@@ -24,37 +23,33 @@ void BoidsManager::OnInit()
 			const std::shared_ptr<Bee> newBoid = std::dynamic_pointer_cast<Bee>(newEntity);
 			if (newBoid != nullptr)
 			{
-				newBoid->Setup(screenSize, id);
-				m_FlockingData[id].id = id;
+				newBoid->Setup(screenSize, i);
+				m_FlockingData[i].id = i;
 				m_Boids[i] = newBoid;
-				id++;
 			}
 		}
 	}
 
 	// predators
 	{
-		id = 0;
 		for (uint16_t i = 0; i < m_Predators.size(); i++)
 		{
 			newEntity = sharedScene->CreateEntity<Hornet>();
 			const std::shared_ptr<Hornet> newPredator = std::dynamic_pointer_cast<Hornet>(newEntity);
 			if (newPredator != nullptr)
 			{
-				newPredator->Setup(screenSize, id);
-				m_PredatorsData[id].id = id;
+				newPredator->Setup(screenSize, i);
+				m_PredatorsData[i].id = i;
 				m_Predators[i] = newPredator;
-				id++;
 			}
 		}
 	}
 
-	//sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), &numberOfBoids);
-	//sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), &numberOfBoids);
+	sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), (float*)(&numberOfBoids));
 	sharedScene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Bee::perceptionRadius);
 	sharedScene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Bee::separationRadius);
 	sharedScene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius);
-	//ImGui::Checkbox(drawDebugInfoText.data(), &m_DrawDebugInfo);
+	sharedScene->RegisterCheckbox(drawDebugInfoField, &BoidBase::isDrawingDebug);
 }
 
 void BoidsManager::Update(float deltaTime)

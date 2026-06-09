@@ -26,10 +26,6 @@ void BoidBase::Update(float deltaTime)
 	// update rotation
 	// avoid walls
 
-	// so acceleration gets updated with alignment, separation and cohesion vectors
-	// then we get velocity and speed from it
-	// then calculate the direction and clamp the velocity
-
 	//m_Velocity += m_Acceleration * deltaTime;
 	//float speed = glm::length(m_Velocity);
 	//m_Direction = m_Velocity / speed;
@@ -38,7 +34,7 @@ void BoidBase::Update(float deltaTime)
 	//m_Acceleration = glm::vec2(0, 0);
 
 	//m_Transform->rotation = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * input.x);
-	m_Speed += acceleration;
-	m_Speed = glm::clamp(m_Speed, 0.f, m_MaxSpeed);
-	m_Rigidbody->ApplyForce(Force(m_Transform->rotation * m_Speed, false));
+	//m_Speed += acceleration;
+	//m_Speed = glm::clamp(m_Speed, 0.f, m_MaxSpeed);
+	//m_Rigidbody->ApplyForce(Force(m_Transform->rotation * m_Speed, false));
 }

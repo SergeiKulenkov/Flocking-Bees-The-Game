@@ -5,6 +5,13 @@
 
 ////////////////////
 
+void Hornet::Setup(const glm::vec2& screenSize, const uint16_t id)
+{
+	m_Id = id;
+	BoidBase::Setup(hornetImagePath, screenSize, screenOffset);
+	m_Rigidbody = AddComponent<Rigidbody>(mass, linearDamping, restitution);
+}
+
 void Hornet::Update(float deltaTime)
 {
 

@@ -38,6 +38,8 @@ protected:
 		: m_MinSpeed(minSpeed), m_MaxSpeed(maxSpeed), m_ObstacleAvoidanceSpeed(obstacleAvoidanceSpeed)
 	{}
 
+	virtual void OnInit() {}
+
 	void Setup(const std::string_view& path, const glm::vec2& screenSize, const float screeOffset);
 
 	////////////////////

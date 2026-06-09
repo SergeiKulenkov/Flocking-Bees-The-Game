@@ -4,6 +4,8 @@
 #include <Scene/Physics.h>
 #include <Utility/Utility.h>
 
+#define ASSERT_BOID_SHARED_PTR(boid) assert(boid && "Can't get Boid's shared pointer because it's no longer valid.");
+
 ////////////////////
 
 void BoidsManager::OnInit()
@@ -18,8 +20,8 @@ void BoidsManager::OnInit()
 	{
 		for (uint16_t i = 0; i < m_Boids.size(); i++)
 		{
-			newEntity = sharedScene->CreateEntity<Boid>();
-			const std::shared_ptr<Boid> newBoid = std::dynamic_pointer_cast<Boid>(newEntity);
+			newEntity = sharedScene->CreateEntity<Bee>();
+			const std::shared_ptr<Bee> newBoid = std::dynamic_pointer_cast<Bee>(newEntity);
 			if (newBoid != nullptr)
 			{
 				newBoid->Setup(screenSize, id);
@@ -35,8 +37,8 @@ void BoidsManager::OnInit()
 		id = 0;
 		for (uint16_t i = 0; i < m_Predators.size(); i++)
 		{
-			newEntity = sharedScene->CreateEntity<Predator>();
-			const std::shared_ptr<Predator> newPredator = std::dynamic_pointer_cast<Predator>(newEntity);
+			newEntity = sharedScene->CreateEntity<Hornet>();
+			const std::shared_ptr<Hornet> newPredator = std::dynamic_pointer_cast<Hornet>(newEntity);
 			if (newPredator != nullptr)
 			{
 				newPredator->Setup(screenSize, id);
@@ -49,9 +51,9 @@ void BoidsManager::OnInit()
 
 	//sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), &numberOfBoids);
 	//sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), &numberOfBoids);
-	sharedScene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Boid::perceptionRadius);
-	sharedScene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Boid::separationRadius);
-	sharedScene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Boid::predatorAvoidanceRadius);
+	sharedScene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Bee::perceptionRadius);
+	sharedScene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Bee::separationRadius);
+	sharedScene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius);
 	//ImGui::Checkbox(drawDebugInfoText.data(), &m_DrawDebugInfo);
 }
 
@@ -65,15 +67,16 @@ void BoidsManager::Update(float deltaTime)
 	for (uint16_t i = 0; i < m_Boids.size(); i++)
 	{
 		Flock(i);
+		AvoidPredators(i);
 	}
 }
 
 void BoidsManager::Flock(const uint16_t index)
 {
-	const std::shared_ptr<Boid> current = m_Boids[index].lock();
-	// TODO: assert valid shared ptr
-	const float perceptionRadiusSquared = (Boid::perceptionRadius + current->GetRadius()) * (Boid::perceptionRadius + current->GetRadius());
-	const float separationRadiusSquared = (Boid::separationRadius + current->GetRadius()) * (Boid::separationRadius + current->GetRadius());
+	const std::shared_ptr<Bee> current = m_Boids[index].lock();
+	ASSERT_BOID_SHARED_PTR(current);
+	const float perceptionRadiusSquared = (Bee::perceptionRadius + current->GetRadius()) * (Bee::perceptionRadius + current->GetRadius());
+	const float separationRadiusSquared = (Bee::separationRadius + current->GetRadius()) * (Bee::separationRadius + current->GetRadius());
 	const glm::vec2 currentPosition = current->GetPosition();
 	const uint16_t currentId = current->GetId();
 
@@ -108,31 +111,31 @@ void BoidsManager::Flock(const uint16_t index)
 	{
 		const glm::vec2 currentVelocity = current->GetVelocity();
 		alignment /= numberOfNeighbours;
-		alignment = glm::normalize(alignment) * Boid::maxSpeed;
+		alignment = glm::normalize(alignment) * Bee::maxSpeed;
 		alignment -= currentVelocity;
-		current->UpdateAcceleration(alignment * Boid::allignmentWeight);
+		current->UpdateAcceleration(alignment * Bee::allignmentWeight);
 
 		cohesion /= numberOfNeighbours;
 		cohesion -= currentPosition;
-		cohesion = glm::normalize(cohesion) * Boid::maxSpeed;
+		cohesion = glm::normalize(cohesion) * Bee::maxSpeed;
 		cohesion -= currentVelocity;
-		current->UpdateAcceleration(cohesion * Boid::cohesionWeight);
+		current->UpdateAcceleration(cohesion * Bee::cohesionWeight);
 
 		if (separation != glm::vec2(0, 0))
 		{
 			separation /= numberOfNeighbours;
-			separation = glm::normalize(separation) * Boid::maxSpeed;
+			separation = glm::normalize(separation) * Bee::maxSpeed;
 			separation -= currentVelocity;
-			current->UpdateAcceleration(separation * Boid::separationWeight);
+			current->UpdateAcceleration(separation * Bee::separationWeight);
 		}
 	}
 }
 
 void BoidsManager::AvoidPredators(const uint16_t index)
 {
-	const std::shared_ptr<Boid> current = m_Boids[index].lock();
-	// TODO: assert valid shared ptr
-	const float avoidanceRadiusSquared = (Boid::predatorAvoidanceRadius + current->GetRadius()) * (Boid::predatorAvoidanceRadius + current->GetRadius());
+	const std::shared_ptr<Bee> current = m_Boids[index].lock();
+	ASSERT_BOID_SHARED_PTR(current);
+	const float avoidanceRadiusSquared = (Bee::predatorAvoidanceRadius + current->GetRadius()) * (Bee::predatorAvoidanceRadius + current->GetRadius());
 	const glm::vec2 currentPosition = current->GetPosition();
 	uint16_t numberOfPredators = 0;
 	glm::vec2 positionDifference = glm::vec2(0, 0);
@@ -154,15 +157,15 @@ void BoidsManager::AvoidPredators(const uint16_t index)
 	{
 		separation *= numberOfPredators;
 		separation = glm::normalize(separation);
-		current->UpdateVelocity(separation * Boid::predatorAvoidanceSpeed);
+		current->UpdateVelocity(separation * Bee::predatorAvoidanceSpeed);
 	}
 }
 
 void BoidsManager::SeparatePredators(const uint16_t index)
 {
-	const std::shared_ptr<Boid> current = m_Boids[index].lock();
+	const std::shared_ptr<Bee> current = m_Boids[index].lock();
 	// TODO: assert valid shared ptr
-	const float separationRadiusSquared = (Predator::separationRadius + current->GetRadius()) * (Predator::separationRadius + current->GetRadius());
+	const float separationRadiusSquared = (Hornet::separationRadius + current->GetRadius()) * (Hornet::separationRadius + current->GetRadius());
 	const glm::vec2 currentPosition = current->GetPosition();
 	const uint16_t currentId = current->GetId();
 
@@ -188,8 +191,8 @@ void BoidsManager::SeparatePredators(const uint16_t index)
 	if (numberOfNeighbours)
 	{
 		separation *= numberOfNeighbours;
-		separation = glm::normalize(separation) * Predator::maxSpeed;
+		separation = glm::normalize(separation) * Hornet::maxSpeed;
 		separation -= current->GetVelocity();
-		current->UpdateAcceleration(separation * Predator::separationWeight);
+		current->UpdateAcceleration(separation * Hornet::separationWeight);
 	}
 }

@@ -1,13 +1,14 @@
 #pragma once
-#include "MovingObject.h"
+#include "BoidBase.h"
 
 ////////////////////
 
-class Predator : public MovingObject
+class Hornet : public BoidBase
 {
 public:
-	Predator() : MovingObject(predatorImagePath, minSpeed, maxSpeed, obstacleAvoidanceSpeed) {}
+	Hornet() : BoidBase(predatorImagePath, minSpeed, maxSpeed, obstacleAvoidanceSpeed) {}
 
+	virtual void Update(float deltaTime) override;
 	virtual void DrawDebug(const RendererDebug& rendererDebug) override;
 
 	static constexpr float separationRadius = 125.f;

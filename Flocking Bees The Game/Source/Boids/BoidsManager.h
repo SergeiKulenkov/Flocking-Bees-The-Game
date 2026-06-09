@@ -5,8 +5,8 @@
 
 #include <Scene/Entity.h>
 
-#include "Boid.h"
-#include "Predator.h"
+#include "Bee.h"
+#include "Hornet.h"
 
 ////////////////////
 
@@ -45,11 +45,14 @@ private:
 	static constexpr std::string_view perceptionRadiusText = "Perception Radius";
 	static constexpr std::string_view separationRadiusText = "Separation Radius";
 	static constexpr std::string_view predatorAvoidanceRadiusText = "Predator Avoidance";
+	static constexpr std::string_view alignmentWeightText = "Alignment Weight";
+	static constexpr std::string_view cohesionWeightText = "Cohesion Weight";
+	static constexpr std::string_view separationWeightText = "Separation Weight";
 
-	std::array<std::weak_ptr<Boid>, numberOfBoids> m_Boids;
+	std::array<std::weak_ptr<Bee>, numberOfBoids> m_Boids;
 	std::array<MovingObjectData, numberOfBoids> m_FlockingData;
 
 	// probably better to move predators to a separate PredatorManager
-	std::array<std::weak_ptr<Predator>, numberOfPredators> m_Predators;
+	std::array<std::weak_ptr<Hornet>, numberOfPredators> m_Predators;
 	std::array<MovingObjectData, numberOfPredators> m_PredatorsData;
 };

@@ -1,11 +1,16 @@
-#include "Predator.h"
+#include "Hornet.h"
 
 #include <Scene/Scene.h>
 #include <Scene/Component/Transform.h>
 
 ////////////////////
 
-void Predator::DrawDebug(const RendererDebug& rendererDebug)
+void Hornet::Update(float deltaTime)
+{
+
+}
+
+void Hornet::DrawDebug(const RendererDebug& rendererDebug)
 {
 	if (isDrawingDebug)
 	{

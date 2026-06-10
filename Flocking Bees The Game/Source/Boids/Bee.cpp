@@ -9,12 +9,13 @@ void Bee::Setup(const glm::vec2& screenSize, const uint16_t id)
 {
 	m_Id = id;
 	BoidBase::Setup(beeImagePath, screenSize, screenOffset);
-	m_Rigidbody = AddComponent<Rigidbody>(mass, linearDamping, restitution);
 }
 
 void Bee::Update(float deltaTime)
 {
-
+	// flock
+	// avoid predators
+	BoidBase::Update(deltaTime);
 }
 
 void Bee::DrawDebug(const RendererDebug& rendererDebug)

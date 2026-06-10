@@ -5,6 +5,7 @@
 #include <Utility/Utility.h>
 
 #define ASSERT_BOID_SHARED_PTR(boid) assert(boid && "Can't get Boid's shared pointer because it's no longer valid.");
+#define ASSERT_PREDATOR_SHARED_PTR(predator) assert(predator && "Can't get Predator's shared pointer because it's no longer valid.");
 
 ////////////////////
 
@@ -17,7 +18,7 @@ void BoidsManager::OnInit()
 
 	// boids
 	{
-		for (uint16_t i = 0; i < m_Boids.size(); i++)
+		for (uint16_t i = 0; i < m_Bees.size(); i++)
 		{
 			newEntity = sharedScene->CreateEntity<Bee>();
 			const std::shared_ptr<Bee> newBoid = std::dynamic_pointer_cast<Bee>(newEntity);
@@ -25,14 +26,14 @@ void BoidsManager::OnInit()
 			{
 				newBoid->Setup(screenSize, i);
 				m_FlockingData[i].id = i;
-				m_Boids[i] = newBoid;
+				m_Bees[i] = newBoid;
 			}
 		}
 	}
 
 	// predators
 	{
-		for (uint16_t i = 0; i < m_Predators.size(); i++)
+		for (uint16_t i = 0; i < m_Hornets.size(); i++)
 		{
 			newEntity = sharedScene->CreateEntity<Hornet>();
 			const std::shared_ptr<Hornet> newPredator = std::dynamic_pointer_cast<Hornet>(newEntity);
@@ -40,12 +41,13 @@ void BoidsManager::OnInit()
 			{
 				newPredator->Setup(screenSize, i);
 				m_PredatorsData[i].id = i;
-				m_Predators[i] = newPredator;
+				m_Hornets[i] = newPredator;
 			}
 		}
 	}
 
-	sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), (float*)(&numberOfBoids));
+	// TODO: use integer function
+	//sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), &numberOfBoids);
 	sharedScene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Bee::perceptionRadius);
 	sharedScene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Bee::separationRadius);
 	sharedScene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius);
@@ -54,12 +56,28 @@ void BoidsManager::OnInit()
 
 void BoidsManager::Update(float deltaTime)
 {
-	for (uint16_t i = 0; i < m_Predators.size(); i++)
+	for (uint16_t index = 0; index < m_PredatorsData.size(); index++)
+	{
+		const std::shared_ptr<Hornet> hornet = m_Hornets[index].lock();
+		ASSERT_PREDATOR_SHARED_PTR(hornet);
+		m_PredatorsData[index].position = hornet->GetPosition();
+		m_PredatorsData[index].velocity = hornet->GetVelocity();
+	}
+
+	for (uint16_t i = 0; i < m_Hornets.size(); i++)
 	{
 		SeparatePredators(i);
 	}
 
-	for (uint16_t i = 0; i < m_Boids.size(); i++)
+	for (uint16_t index = 0; index < m_FlockingData.size(); index++)
+	{
+		const std::shared_ptr<Bee> bee = m_Bees[index].lock();
+		ASSERT_BOID_SHARED_PTR(bee);
+		m_FlockingData[index].position = bee->GetPosition();
+		m_FlockingData[index].velocity = bee->GetVelocity();
+	}
+
+	for (uint16_t i = 0; i < m_Bees.size(); i++)
 	{
 		Flock(i);
 		AvoidPredators(i);
@@ -68,7 +86,7 @@ void BoidsManager::Update(float deltaTime)
 
 void BoidsManager::Flock(const uint16_t index)
 {
-	const std::shared_ptr<Bee> current = m_Boids[index].lock();
+	const std::shared_ptr<Bee> current = m_Bees[index].lock();
 	ASSERT_BOID_SHARED_PTR(current);
 	const float perceptionRadiusSquared = (Bee::perceptionRadius + current->GetRadius()) * (Bee::perceptionRadius + current->GetRadius());
 	const float separationRadiusSquared = (Bee::separationRadius + current->GetRadius()) * (Bee::separationRadius + current->GetRadius());
@@ -108,7 +126,7 @@ void BoidsManager::Flock(const uint16_t index)
 		alignment /= numberOfNeighbours;
 		alignment = glm::normalize(alignment) * Bee::maxSpeed;
 		alignment -= currentVelocity;
-		current->UpdateAcceleration(alignment * Bee::allignmentWeight);
+		current->UpdateAcceleration(alignment * Bee::alignmentWeight);
 
 		cohesion /= numberOfNeighbours;
 		cohesion -= currentPosition;
@@ -128,7 +146,7 @@ void BoidsManager::Flock(const uint16_t index)
 
 void BoidsManager::AvoidPredators(const uint16_t index)
 {
-	const std::shared_ptr<Bee> current = m_Boids[index].lock();
+	const std::shared_ptr<Bee> current = m_Bees[index].lock();
 	ASSERT_BOID_SHARED_PTR(current);
 	const float avoidanceRadiusSquared = (Bee::predatorAvoidanceRadius + current->GetRadius()) * (Bee::predatorAvoidanceRadius + current->GetRadius());
 	const glm::vec2 currentPosition = current->GetPosition();
@@ -136,17 +154,19 @@ void BoidsManager::AvoidPredators(const uint16_t index)
 	glm::vec2 positionDifference = glm::vec2(0, 0);
 	glm::vec2 separation = glm::vec2(0, 0);
 
-	//for (const Predator& predator : m_Predators)
-	//{
-	//	positionDifference = currentPosition - predator.GetPosition();
-	//	float distance = glm::dot(positionDifference, positionDifference);
+	for (const std::weak_ptr<Hornet>& hornet : m_Hornets)
+	{
+		const std::shared_ptr<Hornet> sharedHornet = hornet.lock();
+		ASSERT_PREDATOR_SHARED_PTR(sharedHornet);
+		positionDifference = currentPosition - sharedHornet->GetPosition();
 
-	//	if (distance < avoidanceRadiusSquared)
-	//	{
-	//		separation += positionDifference / distance;
-	//		numberOfPredators++;
-	//	}
-	//}
+		float distance = glm::dot(positionDifference, positionDifference);
+		if (distance < avoidanceRadiusSquared)
+		{
+			separation += positionDifference / distance;
+			numberOfPredators++;
+		}
+	}
 
 	if (numberOfPredators > 0)
 	{
@@ -158,8 +178,8 @@ void BoidsManager::AvoidPredators(const uint16_t index)
 
 void BoidsManager::SeparatePredators(const uint16_t index)
 {
-	const std::shared_ptr<Bee> current = m_Boids[index].lock();
-	// TODO: assert valid shared ptr
+	const std::shared_ptr<Hornet> current = m_Hornets[index].lock();
+	ASSERT_PREDATOR_SHARED_PTR(current);
 	const float separationRadiusSquared = (Hornet::separationRadius + current->GetRadius()) * (Hornet::separationRadius + current->GetRadius());
 	const glm::vec2 currentPosition = current->GetPosition();
 	const uint16_t currentId = current->GetId();

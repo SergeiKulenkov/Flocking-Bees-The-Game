@@ -18,23 +18,19 @@ void BoidBase::Setup(const std::string_view& path, const glm::vec2& screenSize, 
 	const std::shared_ptr<Sprite> sprite = AddComponent<Sprite>(path);
 	m_Radius = sprite->GetSize().x;
 	AddComponent<CircleCollider>(m_Radius);
+	m_Velocity = m_Transform->rotation * m_MinSpeed;
 }
 
 void BoidBase::Update(float deltaTime)
 {
-	// use apply force or update velocity?
-	// update rotation
 	// avoid walls
 
-	//m_Velocity += m_Acceleration * deltaTime;
-	//float speed = glm::length(m_Velocity);
-	//m_Direction = m_Velocity / speed;
-	//speed = glm::clamp(speed, m_MinSpeed, m_MaxSpeed);
-	//m_Velocity = m_Direction * speed;
-	//m_Acceleration = glm::vec2(0, 0);
+	m_Velocity += m_Acceleration * deltaTime;
+	m_Speed = glm::length(m_Velocity);
+	m_Transform->rotation = m_Velocity / m_Speed;
 
-	//m_Transform->rotation = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * input.x);
-	//m_Speed += acceleration;
-	//m_Speed = glm::clamp(m_Speed, 0.f, m_MaxSpeed);
-	//m_Rigidbody->ApplyForce(Force(m_Transform->rotation * m_Speed, false));
+	m_Speed = glm::clamp(m_Speed, m_MinSpeed, m_MaxSpeed);
+	m_Velocity = m_Transform->rotation * m_Speed;
+	m_Acceleration = glm::vec2(0, 0);
+	m_Transform->position += m_Velocity * deltaTime;
 }

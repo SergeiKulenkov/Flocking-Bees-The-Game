@@ -49,10 +49,10 @@ private:
 	static constexpr std::string_view cohesionWeightText = "Cohesion Weight";
 	static constexpr std::string_view separationWeightText = "Separation Weight";
 
-	std::array<std::weak_ptr<Bee>, numberOfBoids> m_Boids;
+	std::array<std::weak_ptr<Bee>, numberOfBoids> m_Bees;
 	std::array<MovingObjectData, numberOfBoids> m_FlockingData;
 
 	// probably better to move predators to a separate PredatorManager
-	std::array<std::weak_ptr<Hornet>, numberOfPredators> m_Predators;
+	std::array<std::weak_ptr<Hornet>, numberOfPredators> m_Hornets;
 	std::array<MovingObjectData, numberOfPredators> m_PredatorsData;
 };

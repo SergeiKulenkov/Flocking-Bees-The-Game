@@ -22,11 +22,11 @@ public:
 
 	uint16_t GetId() const { return m_Id; }
 	glm::vec2 GetPosition() const { return m_Transform->position; }
-	glm::vec2 GetVelocity() const { return m_Rigidbody->GetLinearVelocity(); }
+	glm::vec2 GetVelocity() const { return m_Velocity; }
 	float GetRadius() const { return m_Radius; }
 
 	void UpdateAcceleration(const glm::vec2& acceleration) { m_Acceleration += acceleration; }
-	void UpdateVelocity(const glm::vec2& velocity) { m_Rigidbody->GetLinearVelocity() += velocity; }
+	void UpdateVelocity(const glm::vec2& velocity) { m_Velocity += velocity; }
 	void AvoidBoundaries(const glm::vec2& direction) { UpdateVelocity(direction * m_ObstacleAvoidanceSpeed); }
 
 	////////////////////
@@ -45,6 +45,7 @@ protected:
 	////////////////////
 
 	uint16_t m_Id = 0;
+	glm::vec2 m_Velocity = glm::vec2(0, 0);
 	glm::vec2 m_Acceleration = glm::vec2(0, 0);
 	float m_Speed = 0.f;
 	float m_MinSpeed = 0.f;
@@ -53,5 +54,4 @@ protected:
 	float m_Radius = 0.f;
 
 	std::shared_ptr<TransformData> m_Transform;
-	std::shared_ptr<Rigidbody> m_Rigidbody;
 };

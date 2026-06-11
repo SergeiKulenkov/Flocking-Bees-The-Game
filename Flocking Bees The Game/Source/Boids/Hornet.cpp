@@ -5,9 +5,10 @@
 
 ////////////////////
 
-void Hornet::Setup(const glm::vec2& screenSize, const uint16_t id)
+void Hornet::Setup(const glm::vec2& screenSize, const uint16_t id, BoidsManager* manager)
 {
 	m_Id = id;
+	m_Manager = manager;
 	BoidBase::Setup(hornetImagePath, screenSize, screenOffset);
 }
 
@@ -21,6 +22,6 @@ void Hornet::DrawDebug(const RendererDebug& rendererDebug)
 {
 	if (isDrawingDebug)
 	{
-		rendererDebug.DrawCircle(m_Transform->position, m_Radius + separationRadius, Colour::green);
+		rendererDebug.DrawCircle(m_Transform->position, separationRadius, Colour::green);
 	}
 }

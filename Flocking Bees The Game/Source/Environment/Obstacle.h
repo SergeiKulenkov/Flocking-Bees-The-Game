@@ -34,5 +34,6 @@ private:
 	static constexpr float linearDamping = 0.1f;
 	static constexpr float restitution = 0.9f;
 
+	// colour for drawing the collider
 	uint32_t m_Colour = Colour::green;
 };

@@ -7,6 +7,8 @@
 #include <Scene/Component/Transform.h>
 #include <Scene/Component/Rigidbody.h>
 
+class BoidsManager;
+
 ////////////////////
 
 class BoidBase : public Entity
@@ -17,17 +19,13 @@ public:
 
 	bool operator==(const BoidBase& other) const { return m_Id == other.GetId(); }
 
-	virtual void Setup(const glm::vec2& screenSize, const uint16_t id) {}
-	virtual void Update(float deltaTime) override;
-
 	uint16_t GetId() const { return m_Id; }
 	glm::vec2 GetPosition() const { return m_Transform->position; }
 	glm::vec2 GetVelocity() const { return m_Velocity; }
 	float GetRadius() const { return m_Radius; }
 
-	void UpdateAcceleration(const glm::vec2& acceleration) { m_Acceleration += acceleration; }
+	void UpdateSteeringForce(const glm::vec2& acceleration) { m_SteeringForce += acceleration; }
 	void UpdateVelocity(const glm::vec2& velocity) { m_Velocity += velocity; }
-	void AvoidBoundaries(const glm::vec2& direction) { UpdateVelocity(direction * m_ObstacleAvoidanceSpeed); }
 
 	////////////////////
 
@@ -38,20 +36,35 @@ protected:
 		: m_MinSpeed(minSpeed), m_MaxSpeed(maxSpeed), m_ObstacleAvoidanceSpeed(obstacleAvoidanceSpeed)
 	{}
 
-	virtual void OnInit() {}
+	virtual void OnInit() override {}
+	virtual void OnDestroy() override {}
+	virtual void Update(float deltaTime) override;
 
+	virtual void Setup(const glm::vec2& screenSize, const uint16_t id, BoidsManager* manager) {}
 	void Setup(const std::string_view& path, const glm::vec2& screenSize, const float screeOffset);
+
+	void Flock();
+	void AvoidWalls();
 
 	////////////////////
 
+	static constexpr uint8_t framesBetweenRaycast = 10;
+	static constexpr float raycastLength = 50.f;
+
+	// this should be set during Setup and reset to null when the manager is destroyed
+	// also useful if there are different teams with team managers, instead of using a static reference
+	BoidsManager* m_Manager = nullptr;
 	uint16_t m_Id = 0;
 	glm::vec2 m_Velocity = glm::vec2(0, 0);
-	glm::vec2 m_Acceleration = glm::vec2(0, 0);
+	glm::vec2 m_SteeringForce = glm::vec2(0, 0);
 	float m_Speed = 0.f;
 	float m_MinSpeed = 0.f;
 	float m_MaxSpeed = 0.f;
 	float m_ObstacleAvoidanceSpeed = 0.f;
 	float m_Radius = 0.f;
+	uint8_t m_FrameCounter = 0;
 
 	std::shared_ptr<TransformData> m_Transform;
+
+	friend class BoidsManager;
 };

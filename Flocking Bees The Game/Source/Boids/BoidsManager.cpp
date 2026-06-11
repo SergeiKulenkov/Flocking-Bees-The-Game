@@ -9,13 +9,21 @@
 
 ////////////////////
 
+std::vector<BoidData> BoidsManager::GetNeighbours(const glm::vec2& position, const float radius, const uint16_t selfId)
+{
+	std::vector<BoidData> result;
+
+	return result;
+}
+
 void BoidsManager::OnInit()
 {
 	const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
 	ASSERT_SCENE_SHARED_PTR(sharedScene);
 	const glm::vec2 screenSize = sharedScene->GetScreenSize();
-	std::shared_ptr<Entity> newEntity;
+	m_QuadTree = QuadTree<uint16_t>(glm::vec2(0.f, 0.f), screenSize);
 
+	std::shared_ptr<Entity> newEntity;
 	// boids
 	{
 		for (uint16_t i = 0; i < m_Bees.size(); i++)
@@ -24,7 +32,7 @@ void BoidsManager::OnInit()
 			const std::shared_ptr<Bee> newBoid = std::dynamic_pointer_cast<Bee>(newEntity);
 			if (newBoid != nullptr)
 			{
-				newBoid->Setup(screenSize, i);
+				newBoid->Setup(screenSize, i, this);
 				m_FlockingData[i].id = i;
 				m_Bees[i] = newBoid;
 			}
@@ -39,7 +47,7 @@ void BoidsManager::OnInit()
 			const std::shared_ptr<Hornet> newPredator = std::dynamic_pointer_cast<Hornet>(newEntity);
 			if (newPredator != nullptr)
 			{
-				newPredator->Setup(screenSize, i);
+				newPredator->Setup(screenSize, i, this);
 				m_PredatorsData[i].id = i;
 				m_Hornets[i] = newPredator;
 			}
@@ -88,8 +96,8 @@ void BoidsManager::Flock(const uint16_t index)
 {
 	const std::shared_ptr<Bee> current = m_Bees[index].lock();
 	ASSERT_BOID_SHARED_PTR(current);
-	const float perceptionRadiusSquared = (Bee::perceptionRadius + current->GetRadius()) * (Bee::perceptionRadius + current->GetRadius());
-	const float separationRadiusSquared = (Bee::separationRadius + current->GetRadius()) * (Bee::separationRadius + current->GetRadius());
+	const float perceptionRadiusSquared = (Bee::perceptionRadius) * (Bee::perceptionRadius);
+	const float separationRadiusSquared = (Bee::separationRadius) * (Bee::separationRadius);
 	const glm::vec2 currentPosition = current->GetPosition();
 	const uint16_t currentId = current->GetId();
 
@@ -99,7 +107,7 @@ void BoidsManager::Flock(const uint16_t index)
 	glm::vec2 separation = glm::vec2(0, 0);
 	glm::vec2 positionDifference = glm::vec2(0, 0);
 
-	for (const MovingObjectData& neighbour : m_FlockingData)
+	for (const BoidData& neighbour : m_FlockingData)
 	{
 		if (neighbour.id != currentId)
 		{
@@ -126,20 +134,20 @@ void BoidsManager::Flock(const uint16_t index)
 		alignment /= numberOfNeighbours;
 		alignment = glm::normalize(alignment) * Bee::maxSpeed;
 		alignment -= currentVelocity;
-		current->UpdateAcceleration(alignment * Bee::alignmentWeight);
+		current->UpdateSteeringForce(alignment * Bee::alignmentWeight);
 
 		cohesion /= numberOfNeighbours;
 		cohesion -= currentPosition;
 		cohesion = glm::normalize(cohesion) * Bee::maxSpeed;
 		cohesion -= currentVelocity;
-		current->UpdateAcceleration(cohesion * Bee::cohesionWeight);
+		current->UpdateSteeringForce(cohesion * Bee::cohesionWeight);
 
 		if (separation != glm::vec2(0, 0))
 		{
 			separation /= numberOfNeighbours;
 			separation = glm::normalize(separation) * Bee::maxSpeed;
 			separation -= currentVelocity;
-			current->UpdateAcceleration(separation * Bee::separationWeight);
+			current->UpdateSteeringForce(separation * Bee::separationWeight);
 		}
 	}
 }
@@ -148,7 +156,7 @@ void BoidsManager::AvoidPredators(const uint16_t index)
 {
 	const std::shared_ptr<Bee> current = m_Bees[index].lock();
 	ASSERT_BOID_SHARED_PTR(current);
-	const float avoidanceRadiusSquared = (Bee::predatorAvoidanceRadius + current->GetRadius()) * (Bee::predatorAvoidanceRadius + current->GetRadius());
+	const float avoidanceRadiusSquared = (Bee::predatorAvoidanceRadius) * (Bee::predatorAvoidanceRadius);
 	const glm::vec2 currentPosition = current->GetPosition();
 	uint16_t numberOfPredators = 0;
 	glm::vec2 positionDifference = glm::vec2(0, 0);
@@ -180,7 +188,7 @@ void BoidsManager::SeparatePredators(const uint16_t index)
 {
 	const std::shared_ptr<Hornet> current = m_Hornets[index].lock();
 	ASSERT_PREDATOR_SHARED_PTR(current);
-	const float separationRadiusSquared = (Hornet::separationRadius + current->GetRadius()) * (Hornet::separationRadius + current->GetRadius());
+	const float separationRadiusSquared = (Hornet::separationRadius) * (Hornet::separationRadius);
 	const glm::vec2 currentPosition = current->GetPosition();
 	const uint16_t currentId = current->GetId();
 
@@ -188,7 +196,7 @@ void BoidsManager::SeparatePredators(const uint16_t index)
 	glm::vec2 positionDifference = glm::vec2(0, 0);
 	glm::vec2 separation = glm::vec2(0, 0);
 
-	for (const MovingObjectData& neighbour : m_PredatorsData)
+	for (const BoidData& neighbour : m_PredatorsData)
 	{
 		if (currentId != neighbour.id)
 		{
@@ -208,6 +216,6 @@ void BoidsManager::SeparatePredators(const uint16_t index)
 		separation *= numberOfNeighbours;
 		separation = glm::normalize(separation) * Hornet::maxSpeed;
 		separation -= current->GetVelocity();
-		current->UpdateAcceleration(separation * Hornet::separationWeight);
+		current->UpdateSteeringForce(separation * Hornet::separationWeight);
 	}
 }

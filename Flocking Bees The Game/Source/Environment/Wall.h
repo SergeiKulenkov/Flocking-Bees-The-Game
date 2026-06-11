@@ -24,5 +24,6 @@ protected:
 private:
 	static constexpr float thickness = 5.f;
 
+	// colour for drawing the box collider
 	uint32_t m_Colour = Colour::green;
 };

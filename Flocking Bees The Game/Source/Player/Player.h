@@ -19,6 +19,7 @@ public:
 
 protected:
 	virtual void OnInit() override;
+	virtual void OnDestroy() override {}
 
 	virtual void Update(float deltaTime) override;
 

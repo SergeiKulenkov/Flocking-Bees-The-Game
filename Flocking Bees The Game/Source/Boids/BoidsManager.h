@@ -26,7 +26,9 @@ public:
 	BoidsManager() {}
 	~BoidsManager() {}
 
-	std::vector<BoidData> GetNeighbours(const glm::vec2& position, const float radius, const uint16_t selfId);
+	std::vector<BoidData> GetNeighboursData(const glm::vec2& position, const float radius, const uint16_t selfId) const;
+	std::vector<BoidData> GetBoidsData() const { return m_FlockingData; }
+	std::vector<BoidData> GetPredatorsData() const { return m_PredatorsData; }
 
 protected:
 	virtual void OnInit() override;
@@ -35,13 +37,6 @@ protected:
 	virtual void Update(float deltaTime) override;
 
 private:
-	//void CheckBoundaries(MovingObject& object);
-	void Flock(const uint16_t index);
-	void AvoidPredators(const uint16_t index);
-	void SeparatePredators(const uint16_t index);
-
-	////////////////////
-
 	static constexpr uint16_t numberOfBoids = 100;
 	static constexpr uint8_t numberOfPredators = 2;
 
@@ -55,12 +50,12 @@ private:
 	static constexpr std::string_view cohesionWeightText = "Cohesion Weight";
 	static constexpr std::string_view separationWeightText = "Separation Weight";
 
-	std::array<std::weak_ptr<Bee>, numberOfBoids> m_Bees;
-	std::array<BoidData, numberOfBoids> m_FlockingData;
+	std::vector<std::weak_ptr<Bee>> m_Bees;
+	std::vector<BoidData> m_FlockingData;
 
 	// probably better to move predators to a separate PredatorManager
-	std::array<std::weak_ptr<Hornet>, numberOfPredators> m_Hornets;
-	std::array<BoidData, numberOfPredators> m_PredatorsData;
+	std::vector<std::weak_ptr<Hornet>> m_Hornets;
+	std::vector<BoidData> m_PredatorsData;
 
 	QuadTree<uint16_t> m_QuadTree = QuadTree<uint16_t>(glm::vec2(0.f, 0.f), glm::vec2(1920.f, 1080.f));
 };

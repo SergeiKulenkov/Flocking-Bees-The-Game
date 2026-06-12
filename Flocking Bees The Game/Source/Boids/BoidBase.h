@@ -24,16 +24,13 @@ public:
 	glm::vec2 GetVelocity() const { return m_Velocity; }
 	float GetRadius() const { return m_Radius; }
 
-	void UpdateSteeringForce(const glm::vec2& acceleration) { m_SteeringForce += acceleration; }
-	void UpdateVelocity(const glm::vec2& velocity) { m_Velocity += velocity; }
-
 	////////////////////
 
 	static inline bool isDrawingDebug = false;
 
 protected:
-	BoidBase(const float minSpeed, const float maxSpeed, const float obstacleAvoidanceSpeed)
-		: m_MinSpeed(minSpeed), m_MaxSpeed(maxSpeed), m_ObstacleAvoidanceSpeed(obstacleAvoidanceSpeed)
+	BoidBase(const float minSpeed, const float maxSpeed, const float raycastLength)
+		: m_MinSpeed(minSpeed), m_MaxSpeed(maxSpeed), m_RaycastLength(raycastLength)
 	{}
 
 	virtual void OnInit() override {}
@@ -43,26 +40,30 @@ protected:
 	virtual void Setup(const glm::vec2& screenSize, const uint16_t id, BoidsManager* manager) {}
 	void Setup(const std::string_view& path, const glm::vec2& screenSize, const float screeOffset);
 
-	void Flock();
-	void AvoidWalls();
+	void UpdateSteeringForce(const glm::vec2& force) { m_SteeringForce += force; }
+	void UpdateVelocity(const glm::vec2& velocity) { m_Velocity += velocity; }
+
+	void CheckWalls();
+	virtual void ChangeObstacleAvoidanceState(const bool avoidWalls) {}
 
 	////////////////////
 
 	static constexpr uint8_t framesBetweenRaycast = 10;
-	static constexpr float raycastLength = 50.f;
 
 	// this should be set during Setup and reset to null when the manager is destroyed
 	// also useful if there are different teams with team managers, instead of using a static reference
 	BoidsManager* m_Manager = nullptr;
 	uint16_t m_Id = 0;
+
 	glm::vec2 m_Velocity = glm::vec2(0, 0);
 	glm::vec2 m_SteeringForce = glm::vec2(0, 0);
 	float m_Speed = 0.f;
 	float m_MinSpeed = 0.f;
 	float m_MaxSpeed = 0.f;
-	float m_ObstacleAvoidanceSpeed = 0.f;
 	float m_Radius = 0.f;
+
 	uint8_t m_FrameCounter = 0;
+	float m_RaycastLength = 0.f;
 
 	std::shared_ptr<TransformData> m_Transform;
 

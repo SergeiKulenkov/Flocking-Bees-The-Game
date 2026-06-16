@@ -13,17 +13,20 @@ public:
 
 	void ChangeColour(const uint32_t colour) { m_Colour = colour; }
 
-	// parameters need to be adjusted with the config values
-	void Setup(glm::vec2 position, glm::vec2 size);
+	virtual void Setup(glm::vec2 position, const glm::vec2& size = glm::vec2(0.f, 0.f));
 
 protected:
+	virtual void OnInit() override {}
 	virtual void Update(float deltaTime) override {}
 
 	virtual void DrawDebug(const RendererDebug& rendererDebug) override;
 
+	////////////////////
+
+	// colour for drawing the box colliders
+	uint32_t m_Colour = Colour::green;
+	glm::vec2 m_Size = glm::vec2(0.f, 0.f);
+
 private:
 	static constexpr float thickness = 5.f;
-
-	// colour for drawing the box collider
-	uint32_t m_Colour = Colour::green;
 };

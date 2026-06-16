@@ -1,19 +1,23 @@
 #include "EnvironmentManager.h"
 
+#include <Scene/Component/Transform.h>
+#include <Scene/Component/Sprite.h>
+
 ////////////////////
 
 void EnvironmentManager::OnInit()
 {
-	const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
-	ASSERT_SCENE_SHARED_PTR(sharedScene);
-	const glm::vec2 screenSize = sharedScene->GetScreenSize();
+	ASSERT_SCENE_NULLPTR(m_Scene);
+	const glm::vec2 screenSize = m_Scene->GetScreenSize();
+	AddComponent<Transform>(glm::vec2(screenSize.x / 2.f, screenSize.y / 2.f));
+	AddComponent<Sprite>(backgroundImagePath);
 
 	std::shared_ptr<Entity> newEntity;
 	glm::vec2 position = glm::vec2(0.f, 0.f);
 
 	for (size_t i = 0; i < m_Boundaries.size(); i++)
 	{
-		newEntity = sharedScene->CreateEntity<Wall>();
+		newEntity = m_Scene->CreateEntity<Wall>();
 		const std::shared_ptr<Wall> newWall = std::dynamic_pointer_cast<Wall>(newEntity);
 
 		if (newWall != nullptr)
@@ -30,6 +34,21 @@ void EnvironmentManager::OnInit()
 
 			newWall->Setup(position, size);
 			m_Boundaries[i] = newWall;
+		}
+	}
+
+
+	for (size_t i = 0; i < m_StaticObstacles.size(); i++)
+	{
+		newEntity = m_Scene->CreateEntity<StaticObstacle>();
+		const std::shared_ptr<StaticObstacle> newWall = std::dynamic_pointer_cast<StaticObstacle>(newEntity);
+
+		if (newWall != nullptr)
+		{
+			position.x = Random::RandomInRange<float>(staticObstacleOffset, screenSize.x - staticObstacleOffset);
+			position.y = Random::RandomInRange<float>(staticObstacleOffset, screenSize.y - staticObstacleOffset);
+			newWall->Setup(position);
+			m_StaticObstacles[i] = newWall;
 		}
 	}
 }

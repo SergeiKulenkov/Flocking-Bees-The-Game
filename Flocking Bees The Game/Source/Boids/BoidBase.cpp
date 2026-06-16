@@ -38,11 +38,11 @@ void BoidBase::CheckWalls()
 {
 	// TODO: use a vision cone
 	bool hitWall = false;
-	std::shared_ptr<RaycastHit> hitResult = std::make_shared<RaycastHit>();
-	hitWall = m_Scene.lock()->Raycast(m_Transform->position + m_Transform->rotation * m_Radius, m_Transform->rotation, m_RaycastLength, hitResult);
+	RaycastHit hitResult;
+	hitWall = m_Scene->Raycast(m_Transform->position + m_Transform->rotation * m_Radius, m_Transform->rotation, m_RaycastLength, hitResult);
 	if (hitWall)
 	{
-		const std::shared_ptr<Entity> sharedEntity = hitResult->entity.lock();
+		const std::shared_ptr<Entity> sharedEntity = hitResult.entity.lock();
 		hitWall = std::dynamic_pointer_cast<Wall>(sharedEntity) != nullptr;
 	}
 

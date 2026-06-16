@@ -25,17 +25,15 @@ protected:
 
 	virtual void DrawDebug(const RendererDebug& rendererDebug) override;
 
-	virtual void OnCollision(const std::shared_ptr<Collision>& other) override;
+	virtual void OnCollision(Collision& other) override;
 
 private:
 	glm::vec2 GetMovementInput() const;
 
 	////////////////////
 
-	static constexpr std::string_view defaultTag = "Player";
-	static constexpr std::string_view spritePath = "../Assets/bee.png";
+	static constexpr std::string_view spritePath = "../Assets/bumblebee.png";
 	static constexpr glm::vec2 defaultPosition = glm::vec2(500.f, 300.f);
-	static constexpr float colliderSize = 14.f;
 
 	static constexpr float acceleration = 2.75f;
 	static constexpr float deceleration = 2.15f;

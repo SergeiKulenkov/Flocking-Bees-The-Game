@@ -1,9 +1,11 @@
 #pragma once
 #include <array>
 #include <memory>
+#include <string_view>
 
 #include <Scene/Entity.h>
 #include "Wall.h"
+#include "StaticObstacle.h"
 
 ////////////////////
 
@@ -21,11 +23,15 @@ private:
 	virtual void OnInit() override;
 
 	////////////////////
+	static constexpr std::string_view backgroundImagePath = "../Assets/background.png";
+	static constexpr uint8_t numberOfBoundaries = 4;
+	static constexpr uint8_t numberOfStaticObstacles = 4;
+	static constexpr float staticObstacleOffset = 300.f;
 
-	static constexpr uint8_t numberOfInitialBoundaries = 4;
 	// values are multiplied by screen size
-	static constexpr std::array<glm::vec2, numberOfInitialBoundaries> boundaryPositions = { glm::vec2(0.5f, 0), glm::vec2(1, 0.5f), glm::vec2(0.5f, 1), glm::vec2(0, 0.5f) };
+	static constexpr std::array<glm::vec2, numberOfBoundaries> boundaryPositions = { glm::vec2(0.5f, 0), glm::vec2(1, 0.5f), glm::vec2(0.5f, 1), glm::vec2(0, 0.5f) };
 	static constexpr float boundaryScreenOffset = 5.f;
 
-	std::array<std::weak_ptr<Wall>, numberOfInitialBoundaries> m_Boundaries;
+	std::array<std::weak_ptr<Wall>, numberOfBoundaries> m_Boundaries;
+	std::array<std::weak_ptr<StaticObstacle>, numberOfStaticObstacles> m_StaticObstacles;
 };

@@ -4,13 +4,17 @@
 
 ////////////////////
 
-void Wall::Setup(glm::vec2 position, glm::vec2 size)
+void Wall::Setup(glm::vec2 position, const glm::vec2& size)
 {
-	AddComponent<Transform>(position);
+	if (!HasComponent<Transform>()) AddComponent<Transform>(position);
 
-	if (size.x == 0) size.x = thickness;
-	else size.y = thickness;
-	AddComponent<BoxCollider>(size);
+	if (m_Size == glm::vec2(0.f, 0.f))
+	{
+		m_Size = size;
+		if (size.x == 0) m_Size.x = thickness;
+		else m_Size.y = thickness;
+	}
+	AddComponent<BoxCollider>(m_Size);
 }
 
 void Wall::DrawDebug(const RendererDebug& rendererDebug)

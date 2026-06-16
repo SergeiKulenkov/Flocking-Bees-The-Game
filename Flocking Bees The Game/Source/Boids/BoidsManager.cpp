@@ -18,9 +18,8 @@ std::vector<BoidData> BoidsManager::GetNeighboursData(const glm::vec2& position,
 
 void BoidsManager::OnInit()
 {
-	const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
-	ASSERT_SCENE_SHARED_PTR(sharedScene);
-	const glm::vec2 screenSize = sharedScene->GetScreenSize();
+	ASSERT_SCENE_NULLPTR(m_Scene);
+	const glm::vec2 screenSize = m_Scene->GetScreenSize();
 	m_QuadTree = QuadTree<uint16_t>(glm::vec2(0.f, 0.f), screenSize);
 
 	std::shared_ptr<Entity> newEntity;
@@ -30,7 +29,7 @@ void BoidsManager::OnInit()
 		m_FlockingData.reserve(numberOfBoids);
 		for (uint16_t i = 0; i < numberOfBoids; i++)
 		{
-			newEntity = sharedScene->CreateEntity<Bee>();
+			newEntity = m_Scene->CreateEntity<Bee>();
 			const std::shared_ptr<Bee> newBoid = std::dynamic_pointer_cast<Bee>(newEntity);
 			if (newBoid != nullptr)
 			{
@@ -48,7 +47,7 @@ void BoidsManager::OnInit()
 		m_PredatorsData.reserve(numberOfPredators);
 		for (uint16_t i = 0; i < numberOfPredators; i++)
 		{
-			newEntity = sharedScene->CreateEntity<Hornet>();
+			newEntity = m_Scene->CreateEntity<Hornet>();
 			const std::shared_ptr<Hornet> newPredator = std::dynamic_pointer_cast<Hornet>(newEntity);
 			if (newPredator != nullptr)
 			{
@@ -60,12 +59,11 @@ void BoidsManager::OnInit()
 		}
 	}
 
-	// TODO: use integer function
-	//sharedScene->RegisterDebugWindowField(numberOfBoidsText.data(), &numberOfBoids);
-	sharedScene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Bee::perceptionRadius, Bee::perceptionRadiusMax);
-	sharedScene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Bee::separationRadius, Bee::separationRadiusMax);
-	sharedScene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius, Bee::predatorAvoidanceRadiusMax);
-	sharedScene->RegisterCheckbox(drawDebugInfoField, &BoidBase::isDrawingDebug);
+	m_Scene->RegisterFieldInteger(numberOfBoidsText.data(), (int*)(&numberOfBoids));
+	m_Scene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Bee::perceptionRadius, Bee::perceptionRadiusMax);
+	m_Scene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Bee::separationRadius, Bee::separationRadiusMax);
+	m_Scene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius, Bee::predatorAvoidanceRadiusMax);
+	m_Scene->RegisterCheckbox(drawDebugInfoField, &BoidBase::isDrawingDebug);
 }
 
 void BoidsManager::Update(float deltaTime)

@@ -10,17 +10,15 @@
 #include <Scene/Component/Rigidbody.h>
 #include <Utility/Utility.h>
 
-#include "../Environment/Wall.h"
-
 ////////////////////
 
 void Player::OnInit()
 {
 	m_Transform = AddComponent<Transform>(defaultPosition)->GetTransformData();
-	AddComponent<Tag>(defaultTag.data());
-	AddComponent<Sprite>(spritePath);
+	const glm::vec2 size = AddComponent<Sprite>(spritePath)->GetSize();
 	
-	AddComponent<CircleCollider>(colliderSize);
+	const float radius = glm::min(size.x, size.y);
+	AddComponent<CircleCollider>(radius);
 	m_Rigidbody = AddComponent<Rigidbody>(1.f, linearDamping, restitution);
 }
 
@@ -53,7 +51,7 @@ void Player::Update(float deltaTime)
 	}
 }
 
-void Player::OnCollision(const std::shared_ptr<Collision>& other)
+void Player::OnCollision(Collision& other)
 {
 	m_Speed = 0.f;
 }
@@ -75,34 +73,5 @@ glm::vec2 Player::GetMovementInput() const
 
 void Player::DrawDebug(const RendererDebug& rendererDebug)
 {
-	// draw box collider
-	//AABB boundingBox = GetComponent<BoxCollider>()->GetAABB();
-	//rendererDebug.DrawRectangle(boundingBox.min, boundingBox.max, Colour::green);
-
-	// draw circle collider
 	rendererDebug.DrawCircle(m_Transform->position, GetComponent<CircleCollider>()->GetRadius(), Colour::green);
-
-	// draw player's direction
-	//rendererDebug.DrawLine(m_Transform->position, m_Transform->position + m_Transform->rotation * 30.f, Colour::green);
-	
-	// testing raycast
-	//{
-		//std::shared_ptr<RaycastHit> hitResult = std::make_shared<RaycastHit>();
-		//const glm::vec2 origin = m_Transform->position + m_Transform->rotation * 20.f;
-		//const float length = 80.f;
-		//const std::shared_ptr<Scene> sharedScene = m_Scene.lock();
-		//ASSERT_SCENE_SHARED_PTR(sharedScene);
-
-		//for (int i = 0; i < 9; i++)
-		//{
-		//	glm::vec2 dir = m_Transform->rotation;
-		//	dir.y -= 0.2f * i;
-		//	rendererDebug.DrawLine(origin, origin + dir * length, Colour::green);
-
-		//	if (sharedScene->Raycast(origin, dir, length, hitResult))
-		//	{
-		//		rendererDebug.DrawCircle(hitResult->contactPoint, 10.f, Colour::pink);
-		//	}
-		//}
-	//}
 }

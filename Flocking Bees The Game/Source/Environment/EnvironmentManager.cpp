@@ -40,13 +40,13 @@ void EnvironmentManager::OnInit()
 
 	for (size_t i = 0; i < m_StaticObstacles.size(); i++)
 	{
-		newEntity = m_Scene->CreateEntity<StaticObstacle>();
-		const std::shared_ptr<StaticObstacle> newWall = std::dynamic_pointer_cast<StaticObstacle>(newEntity);
+		newEntity = m_Scene->CreateEntity<StoneObstacle>();
+		const std::shared_ptr<StoneObstacle> newWall = std::dynamic_pointer_cast<StoneObstacle>(newEntity);
 
 		if (newWall != nullptr)
 		{
-			position.x = Random::RandomInRange<float>(staticObstacleOffset, screenSize.x - staticObstacleOffset);
-			position.y = Random::RandomInRange<float>(staticObstacleOffset, screenSize.y - staticObstacleOffset);
+			position.x = Random::RandomInRange<float>(stoneObstacleOffset, screenSize.x - stoneObstacleOffset);
+			position.y = Random::RandomInRange<float>(stoneObstacleOffset, screenSize.y - stoneObstacleOffset);
 			newWall->Setup(position);
 			m_StaticObstacles[i] = newWall;
 		}

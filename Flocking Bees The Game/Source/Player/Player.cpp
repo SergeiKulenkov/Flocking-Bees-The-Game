@@ -18,7 +18,7 @@ void Player::OnInit()
 	const glm::vec2 size = AddComponent<Sprite>(spritePath)->GetSize();
 	
 	const float radius = glm::min(size.x, size.y);
-	AddComponent<CircleCollider>(radius);
+	AddComponent<CircleCollider>(radius / 2.f);
 	m_Rigidbody = AddComponent<Rigidbody>(1.f, linearDamping, restitution);
 }
 

@@ -15,7 +15,7 @@ class BoidBase : public Entity
 {
 public:
 	BoidBase() = delete;
-	virtual ~BoidBase() {}
+	virtual ~BoidBase() { m_Manager = nullptr; }
 
 	bool operator==(const BoidBase& other) const { return m_Id == other.GetId(); }
 
@@ -48,7 +48,7 @@ protected:
 
 	////////////////////
 
-	static constexpr uint8_t framesBetweenRaycast = 10;
+	static constexpr uint8_t framesBetweenRaycast = 5;
 
 	// this should be set during Setup and reset to null when the manager is destroyed
 	// also useful if there are different teams with team managers, instead of using a static reference

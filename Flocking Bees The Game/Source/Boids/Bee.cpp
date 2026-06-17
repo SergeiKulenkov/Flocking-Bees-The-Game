@@ -51,8 +51,9 @@ void Bee::Flock()
 	uint16_t numberOfNeighbours = 0;
 	glm::vec2 positionDifference = glm::vec2(0.f, 0.f);
 
-	//m_Manager->GetNeighbours();
-	for (const BoidData& neighbour : m_Manager->GetBoidsData())
+	// TODO: exclude objects that are behind
+	// preception radius is used because it should be bigger than separation radius
+	for (const BoidData& neighbour : m_Manager->GetNeighboursData(m_Transform->position, perceptionRadius, m_Id))
 	{
 		if (neighbour.id != m_Id)
 		{
@@ -103,6 +104,7 @@ void Bee::AvoidPredators()
 	uint16_t numberOfPredators = 0;
 	glm::vec2 positionDifference = glm::vec2(0.f, 0.f);
 
+	// TODO: exclude objects that are behind
 	for (const BoidData& predator : m_Manager->GetPredatorsData())
 	{
 		positionDifference = m_Transform->position - predator.position;

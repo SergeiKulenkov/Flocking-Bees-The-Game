@@ -27,7 +27,7 @@ public:
 	~BoidsManager() {}
 
 	std::vector<BoidData> GetNeighboursData(const glm::vec2& position, const float radius, const uint16_t selfId) const;
-	std::vector<BoidData> GetBoidsData() const { return m_FlockingData; }
+	// there shouldn't be too many predators to use a quad tree for them
 	std::vector<BoidData> GetPredatorsData() const { return m_PredatorsData; }
 
 protected:
@@ -37,7 +37,11 @@ protected:
 	virtual void Update(float deltaTime) override;
 
 private:
-	static constexpr uint16_t numberOfBoids = 100;
+	void InitBoids(const glm::vec2& screenSize);
+	void InitPredators(const glm::vec2& screenSize);
+	void RegisterDebugFields() const;
+
+	static constexpr uint16_t numberOfBoids = 200;
 	static constexpr uint8_t numberOfPredators = 2;
 
 	static constexpr std::string_view drawDebugInfoField = "Draw Debug Info";
@@ -53,9 +57,8 @@ private:
 	std::vector<std::weak_ptr<Bee>> m_Bees;
 	std::vector<BoidData> m_FlockingData;
 
-	// probably better to move predators to a separate PredatorManager
 	std::vector<std::weak_ptr<Hornet>> m_Hornets;
 	std::vector<BoidData> m_PredatorsData;
 
-	QuadTree<uint16_t> m_QuadTree = QuadTree<uint16_t>(glm::vec2(0.f, 0.f), glm::vec2(1920.f, 1080.f));
+	QuadTree<uint16_t> m_BoidsQuadTree = QuadTree<uint16_t>(glm::vec2(0.f, 0.f), glm::vec2(1920.f, 1080.f));
 };

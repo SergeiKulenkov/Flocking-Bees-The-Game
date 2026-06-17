@@ -32,7 +32,7 @@ void Hornet::Update(float deltaTime)
 	else if (m_State == HornetState::ObstacleAvoidance)
 	{
 		const glm::vec2 rotate = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * (-1.f));
-		UpdateVelocity(m_Transform->rotation * (-1.f) * obstacleAvoidanceSpeed);
+		UpdateVelocity(rotate * obstacleAvoidanceSpeed);
 	}
 
 	BoidBase::Update(deltaTime);

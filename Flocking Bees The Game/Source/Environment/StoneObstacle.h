@@ -7,11 +7,11 @@
 
 ////////////////////
 
-class StaticObstacle : public Wall
+class StoneObstacle : public Wall
 {
 public:
-	StaticObstacle() {}
-	virtual ~StaticObstacle() {}
+	StoneObstacle() {}
+	virtual ~StoneObstacle() {}
 
 	virtual void Setup(glm::vec2 position, const glm::vec2& size = glm::vec2(0.f, 0.f)) override
 	{

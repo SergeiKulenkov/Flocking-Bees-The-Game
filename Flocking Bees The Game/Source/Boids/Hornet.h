@@ -27,16 +27,16 @@ protected:
 
 private:
 	static constexpr std::string_view hornetImagePath = "../Assets/predator.png";
-	static constexpr float minSpeed = 67.5f;
-	static constexpr float maxSpeed = 112.25f;
-	static constexpr float rotationRate = 60.f;
+	static constexpr float minSpeed = 45.f;
+	static constexpr float maxSpeed = 75.f;
+	static constexpr float rotationRate = 70.f;
 	static constexpr float obstacleAvoidanceSpeed = 1.f;
 	static constexpr float raycastLength = 100.f;
 
 	static constexpr float separationRadius = 125.f;
 	static constexpr float separationWeight = 1.5f;
 
-	static constexpr float screenOffset = 70.f;
+	static constexpr float screenOffset = 150.f;
 	static constexpr float mass = 0.25f;
 	static constexpr float linearDamping = 0.1f;
 	static constexpr float restitution = 0.9f;

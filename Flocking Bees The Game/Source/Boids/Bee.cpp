@@ -139,4 +139,22 @@ void Bee::DrawDebug(const RendererDebug& rendererDebug)
 		rendererDebug.DrawCircle(m_Transform->position, separationRadius, Colour::yellow);
 		rendererDebug.DrawCircle(m_Transform->position, predatorAvoidanceRadius, Colour::red);
 	}
+
+	float angleStep = 0.15f;
+	for (int i = 0; i < 5; i++)
+	{
+		glm::vec2 direction = m_Transform->rotation;
+		if (i != 0 && i % 2 == 0)
+		{
+			float angle = angleStep * (float)((i + 1) / 2);
+			direction = Vector::Rotate(direction, -angle);
+		}
+		else if (i % 2 != 0)
+		{
+			float angle = angleStep * (float)((i + 1) / 2);
+			direction = Vector::Rotate(direction, angle);
+		}
+		glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
+		rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
+	}
 }

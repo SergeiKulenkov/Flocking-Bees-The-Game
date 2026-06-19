@@ -108,8 +108,8 @@ void Bee::AvoidPredators()
 	for (const BoidData& predator : m_Manager->GetPredatorsData())
 	{
 		positionDifference = m_Transform->position - predator.position;
-
 		float distance = glm::dot(positionDifference, positionDifference);
+
 		if (distance < avoidanceRadiusSquared)
 		{
 			m_SeparationForce += positionDifference / distance;
@@ -120,8 +120,9 @@ void Bee::AvoidPredators()
 	if (numberOfPredators > 0)
 	{
 		m_SeparationForce *= numberOfPredators;
-		m_SeparationForce = glm::normalize(m_SeparationForce);
-		UpdateVelocity(m_SeparationForce * predatorAvoidanceSpeed);
+		m_SeparationForce = glm::normalize(m_SeparationForce) * maxSpeed;
+		//m_SeparationForce -= m_Velocity;
+		UpdateSteeringForce(m_SeparationForce * predatorAvoidanceWeight);
 	}
 }
 
@@ -135,7 +136,7 @@ void Bee::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContac
 			if (m_Transform->rotation.y > 0.f)
 			{
 				// looking down
-				rotateClockwise = (rayId != 0 && rayId % 2 == 0);
+				rotateClockwise = !(rayId != 0 && rayId % 2 == 0);
 			}
 			else rotateClockwise = (rayId % 2 != 0);
 		}
@@ -144,7 +145,7 @@ void Bee::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContac
 	{
 		if (m_State == BeeState::ObstacleAvoidance)
 		{
-			// debug rotating right and left
+			// TODO: add a timer or a frame counter to continue rotation for a bit or acelerate away
 		}
 		m_State = BeeState::Flocking;
 	}
@@ -157,23 +158,23 @@ void Bee::DrawDebug(const RendererDebug& rendererDebug)
 		rendererDebug.DrawCircle(m_Transform->position, perceptionRadius, Colour::green);
 		rendererDebug.DrawCircle(m_Transform->position, separationRadius, Colour::yellow);
 		rendererDebug.DrawCircle(m_Transform->position, predatorAvoidanceRadius, Colour::red);
+	}
 
-		const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
-		for (uint8_t i = 0; i < numebrOfRays; i++)
+	const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
+	for (uint8_t i = 0; i < numebrOfRays; i++)
+	{
+		glm::vec2 direction = m_Transform->rotation;
+		if (i != 0 && i % 2 == 0)
 		{
-			glm::vec2 direction = m_Transform->rotation;
-			if (i != 0 && i % 2 == 0)
-			{
-				const float angle = raycastAngleStep * (float)((i + 1) / 2);
-				direction = Vector::Rotate(direction, -angle);
-			}
-			else if (i % 2 != 0)
-			{
-				const float angle = raycastAngleStep * (float)((i + 1) / 2);
-				direction = Vector::Rotate(direction, angle);
-			}
-
-			rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
+			const float angle = raycastAngleStep * (float)((i + 1) / 2);
+			direction = Vector::Rotate(direction, -angle);
 		}
+		else if (i % 2 != 0)
+		{
+			const float angle = raycastAngleStep * (float)((i + 1) / 2);
+			direction = Vector::Rotate(direction, angle);
+		}
+
+		rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
 	}
 }

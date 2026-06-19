@@ -22,7 +22,7 @@ public:
 	// not const so they can be edited in the debug window
 	static inline float perceptionRadius = 50.f;
 	static inline float separationRadius = 35.f;
-	static inline float predatorAvoidanceRadius = 100.f;
+	static inline float predatorAvoidanceRadius = 130.f;
 
 	static inline float perceptionRadiusMax = 100.f;
 	static inline float separationRadiusMax = 75.f;
@@ -40,15 +40,15 @@ protected:
 private:
 	static constexpr std::string_view beeImagePath = "../Assets/bee.png";
 
-	static constexpr float minSpeed = 55.f;
-	static constexpr float maxSpeed = 85.f;
-	static constexpr float rotationRate = 3.f;
-	static constexpr float raycastLength = 100.f;
+	static constexpr float minSpeed = 70.f;
+	static constexpr float maxSpeed = 90.f;
+	static constexpr float rotationRate = 2.f;
+	static constexpr float raycastLength = 120.f;
 
 	static constexpr float alignmentWeight = 0.8f;
 	static constexpr float cohesionWeight = 0.8f;
 	static constexpr float separationWeight = 1.3f;
-	static constexpr float predatorAvoidanceSpeed = 22.0f;
+	static constexpr float predatorAvoidanceWeight = 10.0f;
 
 	static constexpr float screenOffset = 300.f;
 	static constexpr float mass = 0.25f;

@@ -31,8 +31,8 @@ void Hornet::Update(float deltaTime)
 	}
 	else if (m_State == HornetState::ObstacleAvoidance)
 	{
-		const glm::vec2 rotate = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * (-1.f));
-		UpdateVelocity(rotate * obstacleAvoidanceSpeed);
+		const float direction = rotateClockwise ? -1.f : 1.f;
+		m_Transform->rotation = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * direction);
 	}
 
 	BoidBase::Update(deltaTime);
@@ -71,8 +71,27 @@ void Hornet::AvoidPredators()
 
 void Hornet::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId)
 {
-	if (hitWall) m_State = HornetState::ObstacleAvoidance;
-	else m_State = HornetState::Wandering;
+	if (hitWall)
+	{
+		if (m_State != HornetState::ObstacleAvoidance)
+		{
+			m_State = HornetState::ObstacleAvoidance;
+			if (m_Transform->rotation.y > 0.f)
+			{
+				// looking down
+				rotateClockwise = !(rayId != 0 && rayId % 2 == 0);
+			}
+			else rotateClockwise = (rayId % 2 != 0);
+		}
+	}
+	else
+	{
+		if (m_State == HornetState::ObstacleAvoidance)
+		{
+			// TODO: add a timer or a frame counter to continue rotation for a bit or acelerate away
+		}
+		m_State = HornetState::Wandering;
+	}
 }
 
 void Hornet::DrawDebug(const RendererDebug& rendererDebug)
@@ -80,5 +99,23 @@ void Hornet::DrawDebug(const RendererDebug& rendererDebug)
 	if (isDrawingDebug)
 	{
 		rendererDebug.DrawCircle(m_Transform->position, separationRadius, Colour::green);
+	}
+
+	const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
+	for (uint8_t i = 0; i < numebrOfRays; i++)
+	{
+		glm::vec2 direction = m_Transform->rotation;
+		if (i != 0 && i % 2 == 0)
+		{
+			const float angle = raycastAngleStep * (float)((i + 1) / 2);
+			direction = Vector::Rotate(direction, -angle);
+		}
+		else if (i % 2 != 0)
+		{
+			const float angle = raycastAngleStep * (float)((i + 1) / 2);
+			direction = Vector::Rotate(direction, angle);
+		}
+
+		rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
 	}
 }

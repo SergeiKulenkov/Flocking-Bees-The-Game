@@ -41,7 +41,7 @@ private:
 	void InitPredators(const glm::vec2& screenSize);
 	void RegisterDebugFields() const;
 
-	static constexpr uint16_t numberOfBoids = 2;
+	static constexpr uint16_t numberOfBoids = 10;
 	static constexpr uint8_t numberOfPredators = 2;
 
 	static constexpr std::string_view drawDebugInfoField = "Draw Debug Info";

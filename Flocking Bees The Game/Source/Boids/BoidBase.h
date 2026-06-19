@@ -51,7 +51,7 @@ protected:
 
 	static constexpr uint8_t framesBetweenRaycast = 5;
 	static constexpr uint8_t numebrOfRays = 5;
-	static constexpr float raycastAngleStep = 0.175f;
+	static constexpr float raycastAngleStep = 0.262f;
 
 	// this should be set during Setup and reset to null when the manager is destroyed
 	// also useful if there are different teams with team managers, instead of using a static reference

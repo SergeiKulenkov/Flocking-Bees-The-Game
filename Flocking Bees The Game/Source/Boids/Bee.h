@@ -35,15 +35,14 @@ protected:
 
 	void Flock();
 	void AvoidPredators();
-	virtual void ChangeObstacleAvoidanceState(const bool avoidWalls);
+	virtual void UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId);
 
 private:
 	static constexpr std::string_view beeImagePath = "../Assets/bee.png";
 
 	static constexpr float minSpeed = 55.f;
 	static constexpr float maxSpeed = 85.f;
-	static constexpr float rotationRate = 90.f;
-	static constexpr float obstacleAvoidanceSpeed = 1.f;
+	static constexpr float rotationRate = 3.f;
 	static constexpr float raycastLength = 100.f;
 
 	static constexpr float alignmentWeight = 0.8f;

@@ -33,8 +33,8 @@ void Bee::Update(float deltaTime)
 	}
 	else if (m_State == BeeState::ObstacleAvoidance)
 	{
-		const glm::vec2 rotate = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * (-1.f));
-		UpdateVelocity(rotate * obstacleAvoidanceSpeed);
+		const float direction = rotateClockwise ? -1.f : 1.f;
+		m_Transform->rotation = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * direction);
 	}
 
 	BoidBase::Update(deltaTime);
@@ -125,10 +125,29 @@ void Bee::AvoidPredators()
 	}
 }
 
-void Bee::ChangeObstacleAvoidanceState(const bool avoidWalls)
+void Bee::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId)
 {
-	if (avoidWalls) m_State = BeeState::ObstacleAvoidance;
-	else m_State = BeeState::Flocking;
+	if (hitWall)
+	{
+		if (m_State != BeeState::ObstacleAvoidance)
+		{
+			m_State = BeeState::ObstacleAvoidance;
+			if (m_Transform->rotation.y > 0.f)
+			{
+				// looking down
+				rotateClockwise = (rayId != 0 && rayId % 2 == 0);
+			}
+			else rotateClockwise = (rayId % 2 != 0);
+		}
+	}
+	else
+	{
+		if (m_State == BeeState::ObstacleAvoidance)
+		{
+			// debug rotating right and left
+		}
+		m_State = BeeState::Flocking;
+	}
 }
 
 void Bee::DrawDebug(const RendererDebug& rendererDebug)
@@ -138,23 +157,23 @@ void Bee::DrawDebug(const RendererDebug& rendererDebug)
 		rendererDebug.DrawCircle(m_Transform->position, perceptionRadius, Colour::green);
 		rendererDebug.DrawCircle(m_Transform->position, separationRadius, Colour::yellow);
 		rendererDebug.DrawCircle(m_Transform->position, predatorAvoidanceRadius, Colour::red);
-	}
 
-	float angleStep = 0.15f;
-	for (int i = 0; i < 5; i++)
-	{
-		glm::vec2 direction = m_Transform->rotation;
-		if (i != 0 && i % 2 == 0)
+		const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
+		for (uint8_t i = 0; i < numebrOfRays; i++)
 		{
-			float angle = angleStep * (float)((i + 1) / 2);
-			direction = Vector::Rotate(direction, -angle);
+			glm::vec2 direction = m_Transform->rotation;
+			if (i != 0 && i % 2 == 0)
+			{
+				const float angle = raycastAngleStep * (float)((i + 1) / 2);
+				direction = Vector::Rotate(direction, -angle);
+			}
+			else if (i % 2 != 0)
+			{
+				const float angle = raycastAngleStep * (float)((i + 1) / 2);
+				direction = Vector::Rotate(direction, angle);
+			}
+
+			rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
 		}
-		else if (i % 2 != 0)
-		{
-			float angle = angleStep * (float)((i + 1) / 2);
-			direction = Vector::Rotate(direction, angle);
-		}
-		glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
-		rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
 	}
 }

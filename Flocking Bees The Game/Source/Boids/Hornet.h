@@ -23,7 +23,7 @@ protected:
 	virtual void DrawDebug(const RendererDebug& rendererDebug) override;
 
 	void AvoidPredators();
-	virtual void ChangeObstacleAvoidanceState(const bool avoidWalls);
+	virtual void UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId);
 
 private:
 	static constexpr std::string_view hornetImagePath = "../Assets/predator.png";

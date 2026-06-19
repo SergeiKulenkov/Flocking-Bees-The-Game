@@ -16,53 +16,69 @@ void BoidBase::Setup(const std::string_view& path, const glm::vec2& screenSize, 
 										Random::RandomInRange(screenOffset, screenSize.y - screenOffset));
 	const glm::vec2 direction = glm::vec2(Random::RandomInRange(-1.f, 1.f), Random::RandomInRange(-1.f, 1.f));
 
-	m_Transform = AddComponent<Transform>(position, direction)->GetTransformData();
+	m_Transform = AddComponent<Transform>(position, glm::normalize(direction))->GetTransformData();
 	const glm::vec2 size = AddComponent<Sprite>(path)->GetSize();
-	m_Radius = glm::min(size.x, size.y);
+	m_Radius = glm::min(size.x, size.y) / 2.f;
 	m_Velocity = m_Transform->rotation * m_MinSpeed;
 }
 
 void BoidBase::Update(float deltaTime)
 {
-	m_Velocity += m_SteeringForce * deltaTime;
-	m_Speed = glm::length(m_Velocity);
-	m_Transform->rotation = m_Velocity / m_Speed;
+	if (m_SteeringForce != glm::vec2(0.f, 0.f))
+	{
+		m_Velocity += m_SteeringForce * deltaTime;
+		m_Speed = glm::length(m_Velocity);
+		m_Transform->rotation = m_Velocity / m_Speed;
 
-	m_Speed = glm::clamp(m_Speed, m_MinSpeed, m_MaxSpeed);
-	m_Velocity = m_Transform->rotation * m_Speed;
-	m_SteeringForce = glm::vec2(0, 0);
-	m_Transform->position += m_Velocity * deltaTime;
+		m_Speed = glm::clamp(m_Speed, m_MinSpeed, m_MaxSpeed);
+		m_Velocity = m_Transform->rotation * m_Speed;
+		m_SteeringForce = glm::vec2(0, 0);
+		m_Transform->position += m_Velocity * deltaTime;
+	}
+	else
+	{
+		// there's no outside force so just move in the current direction
+		// maybe add a bit of randomness to speed and direction
+		m_Speed = glm::clamp(m_Speed, m_MinSpeed, m_MaxSpeed);
+		// don't multiply a vector twice
+		m_Transform->position += m_Speed * deltaTime * m_Transform->rotation;
+	}
 }
 
 void BoidBase::CheckWalls()
 {
 	bool hitWall = false;
 	RaycastHit hitResult;
-	float angleStep = 0.15f;
+	const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
+	uint8_t rayId = 0;
 
-	for (int i = 0; i < 5; i++)
+	for (uint8_t i = 0; i < numebrOfRays; i++)
 	{
 		glm::vec2 direction = m_Transform->rotation;
 		if (i != 0 && i % 2 == 0)
 		{
-			float angle = angleStep * (float)((i + 1) / 2);
+			const float angle = raycastAngleStep * (float)((i + 1) / 2);
 			direction = Vector::Rotate(direction, -angle);
 		}
 		else if (i % 2 != 0)
 		{
-			float angle = angleStep * (float)((i + 1) / 2);
+			const float angle = raycastAngleStep * (float)((i + 1) / 2);
 			direction = Vector::Rotate(direction, angle);
 		}
 
-		hitWall = m_Scene->Raycast(m_Transform->position + m_Transform->rotation * m_Radius, direction, m_RaycastLength, hitResult);
-		if (hitWall)
+		if (m_Scene->Raycast(start, direction, m_RaycastLength, hitResult))
 		{
-			const std::shared_ptr<Entity> sharedEntity = hitResult.entity.lock();
-			ASSERT_ENTITY_SHARED_PTR(sharedEntity);
-			hitWall = std::dynamic_pointer_cast<Wall>(sharedEntity) != nullptr;
-			break;
+			const std::shared_ptr<Entity> hitEntity = hitResult.entity.lock();
+			ASSERT_ENTITY_SHARED_PTR(hitEntity);
+
+			hitWall = std::dynamic_pointer_cast<Wall>(hitEntity) != nullptr;
+			if (hitWall)
+			{
+				rayId = i;
+				break;
+			}
 		}
 	}
 
-	ChangeObstacleAvoidanceState(hitWall);
+	UpdateObstacleAvoidance(hitWall, hitResult.contactPoint, rayId);
 }

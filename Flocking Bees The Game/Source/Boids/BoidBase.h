@@ -42,13 +42,16 @@ protected:
 
 	void UpdateSteeringForce(const glm::vec2& force) { m_SteeringForce += force; }
 	void UpdateVelocity(const glm::vec2& velocity) { m_Velocity += velocity; }
+	//void Rotate(const float angle) {  }
 
 	void CheckWalls();
-	virtual void ChangeObstacleAvoidanceState(const bool avoidWalls) {}
+	virtual void UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId) {}
 
 	////////////////////
 
 	static constexpr uint8_t framesBetweenRaycast = 5;
+	static constexpr uint8_t numebrOfRays = 5;
+	static constexpr float raycastAngleStep = 0.175f;
 
 	// this should be set during Setup and reset to null when the manager is destroyed
 	// also useful if there are different teams with team managers, instead of using a static reference
@@ -64,6 +67,7 @@ protected:
 
 	uint8_t m_FrameCounter = 0;
 	float m_RaycastLength = 0.f;
+	bool rotateClockwise = false;
 
 	std::shared_ptr<TransformData> m_Transform;
 

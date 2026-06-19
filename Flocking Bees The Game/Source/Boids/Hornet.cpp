@@ -69,9 +69,9 @@ void Hornet::AvoidPredators()
 	}
 }
 
-void Hornet::ChangeObstacleAvoidanceState(const bool avoidWalls)
+void Hornet::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId)
 {
-	if (avoidWalls) m_State = HornetState::ObstacleAvoidance;
+	if (hitWall) m_State = HornetState::ObstacleAvoidance;
 	else m_State = HornetState::Wandering;
 }
 

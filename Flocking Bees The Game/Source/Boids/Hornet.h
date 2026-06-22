@@ -27,18 +27,18 @@ protected:
 
 private:
 	static constexpr std::string_view hornetImagePath = "../Assets/predator.png";
-	static constexpr float minSpeed = 45.f;
-	static constexpr float maxSpeed = 75.f;
-	static constexpr float rotationRate = 3.f;
+	static constexpr float minSpeed = 40.f;
+	static constexpr float maxSpeed = 60.f;
+	static constexpr float rotationRate = 1.5f;
 	static constexpr float raycastLength = 150.f;
+	static constexpr float screenOffset = 150.f;
 
-	static constexpr float separationRadius = 125.f;
+	static constexpr float separationRadius = 150.f;
 	static constexpr float separationWeight = 1.5f;
 
-	static constexpr float screenOffset = 150.f;
-	static constexpr float mass = 0.25f;
-	static constexpr float linearDamping = 0.1f;
-	static constexpr float restitution = 0.9f;
+	// temporary while testing raycasting for obstacle avoidance
+	static constexpr float boundaryAvoidanceSpeed = 3.f;
+	static constexpr float edgeMargin = 50.f;
 
 	HornetState m_State = HornetState::None;
 	glm::vec2 m_SeparationForce = glm::vec2(0.f, 0.f);

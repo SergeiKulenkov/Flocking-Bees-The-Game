@@ -3,7 +3,6 @@
 #include <Scene/Scene.h>
 #include <Scene/Physics.h>
 #include <Scene/Component/Sprite.h>
-#include <Scene/Component/Collider.h>
 #include <Utility/Utility.h>
 
 #include "../Environment/Wall.h"
@@ -24,8 +23,9 @@ void BoidBase::Setup(const std::string_view& path, const glm::vec2& screenSize, 
 
 void BoidBase::Update(float deltaTime)
 {
-	if (m_SteeringForce != glm::vec2(0.f, 0.f))
-	{
+	CheckBoundaries();
+	//if (m_SteeringForce != glm::vec2(0.f, 0.f))
+	//{
 		m_Velocity += m_SteeringForce * deltaTime;
 		m_Speed = glm::length(m_Velocity);
 		m_Transform->rotation = m_Velocity / m_Speed;
@@ -34,15 +34,15 @@ void BoidBase::Update(float deltaTime)
 		m_Velocity = m_Transform->rotation * m_Speed;
 		m_SteeringForce = glm::vec2(0, 0);
 		m_Transform->position += m_Velocity * deltaTime;
-	}
-	else
-	{
-		// there's no outside force so just move in the current direction
-		// maybe add a bit of randomness to speed and direction
-		m_Speed = glm::clamp(m_Speed, m_MinSpeed, m_MaxSpeed);
-		// don't multiply a vector twice
-		m_Transform->position += m_Speed * deltaTime * m_Transform->rotation;
-	}
+	//}
+	//else
+	//{
+	//	// there's no outside force so just move in the current direction
+	//	// maybe add a bit of randomness to speed and direction
+	//	m_Speed = glm::clamp(m_Speed, m_MinSpeed, m_MaxSpeed);
+	//	// don't multiply a vector twice
+	//	m_Transform->position += m_Speed * deltaTime * m_Transform->rotation;
+	//}
 }
 
 void BoidBase::CheckWalls()
@@ -81,4 +81,29 @@ void BoidBase::CheckWalls()
 	}
 
 	UpdateObstacleAvoidance(hitWall, hitResult.contactPoint, rayId);
+}
+
+void BoidBase::CheckBoundaries()
+{
+	glm::vec2 avoidanceDirection = glm::vec2(0, 0);
+
+	if (m_Transform->position.x < m_EdgeMargin)
+	{
+		avoidanceDirection.x = 1;
+	}
+	else if (m_Transform->position.x > boundaries.x - m_EdgeMargin)
+	{
+		avoidanceDirection.x = -1;
+	}
+
+	if (m_Transform->position.y < m_EdgeMargin)
+	{
+		avoidanceDirection.y = 1;
+	}
+	else if (m_Transform->position.y > boundaries.y - m_EdgeMargin)
+	{
+		avoidanceDirection.y = -1;
+	}
+
+	UpdateVelocity(avoidanceDirection * m_BoundariesAvoidanceSpeed);
 }

@@ -13,29 +13,33 @@ void Bee::Setup(const glm::vec2& screenSize, const uint16_t id, BoidsManager* ma
 	m_Manager = manager;
 	BoidBase::Setup(beeImagePath, screenSize, screenOffset);
 	m_State = BeeState::Flocking;
+
+	// temporary while testing raycasting for obstacle avoidance
+	m_EdgeMargin = edgeMargin;
+	m_BoundariesAvoidanceSpeed = boundaryAvoidanceSpeed;
 }
 
 void Bee::Update(float deltaTime)
 {
 	// TDOD: use a FSM
-	if (m_State == BeeState::ObstacleAvoidance ||
-		m_FrameCounter == framesBetweenRaycast)
-	{
-		CheckWalls();
-		m_FrameCounter = 0;
-	}
-	else m_FrameCounter++;
+	//if (m_State == BeeState::ObstacleAvoidance ||
+	//	m_FrameCounter == framesBetweenRaycast)
+	//{
+	//	CheckWalls();
+	//	m_FrameCounter = 0;
+	//}
+	//else m_FrameCounter++;
 
 	if (m_State == BeeState::Flocking)
 	{
 		Flock();
 		AvoidPredators();
 	}
-	else if (m_State == BeeState::ObstacleAvoidance)
-	{
-		const float direction = rotateClockwise ? -1.f : 1.f;
-		m_Transform->rotation = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * direction);
-	}
+	//else if (m_State == BeeState::ObstacleAvoidance)
+	//{
+	//	const float direction = m_RotateClockwise ? -1.f : 1.f;
+	//	m_Transform->rotation = Vector::Rotate(m_Transform->rotation, rotationRate * deltaTime * direction);
+	//}
 
 	BoidBase::Update(deltaTime);
 }
@@ -128,27 +132,23 @@ void Bee::AvoidPredators()
 
 void Bee::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId)
 {
-	if (hitWall)
-	{
-		if (m_State != BeeState::ObstacleAvoidance)
-		{
-			m_State = BeeState::ObstacleAvoidance;
-			if (m_Transform->rotation.y > 0.f)
-			{
-				// looking down
-				rotateClockwise = !(rayId != 0 && rayId % 2 == 0);
-			}
-			else rotateClockwise = (rayId % 2 != 0);
-		}
-	}
-	else
-	{
-		if (m_State == BeeState::ObstacleAvoidance)
-		{
-			// TODO: add a timer or a frame counter to continue rotation for a bit or acelerate away
-		}
-		m_State = BeeState::Flocking;
-	}
+	//if (hitWall)
+	//{
+	//	if (m_State != BeeState::ObstacleAvoidance)
+	//	{
+	//		m_State = BeeState::ObstacleAvoidance;
+	//		if (m_Transform->rotation.y > 0.f)
+	//		{
+	//			// looking down
+	//			m_RotateClockwise = !(rayId != 0 && rayId % 2 == 0);
+	//		}
+	//		else m_RotateClockwise = (rayId % 2 != 0);
+	//	}
+	//}
+	//else
+	//{
+	//	m_State = BeeState::Flocking;
+	//}
 }
 
 void Bee::DrawDebug(const RendererDebug& rendererDebug)
@@ -160,21 +160,21 @@ void Bee::DrawDebug(const RendererDebug& rendererDebug)
 		rendererDebug.DrawCircle(m_Transform->position, predatorAvoidanceRadius, Colour::red);
 	}
 
-	const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
-	for (uint8_t i = 0; i < numebrOfRays; i++)
-	{
-		glm::vec2 direction = m_Transform->rotation;
-		if (i != 0 && i % 2 == 0)
-		{
-			const float angle = raycastAngleStep * (float)((i + 1) / 2);
-			direction = Vector::Rotate(direction, -angle);
-		}
-		else if (i % 2 != 0)
-		{
-			const float angle = raycastAngleStep * (float)((i + 1) / 2);
-			direction = Vector::Rotate(direction, angle);
-		}
+	//const glm::vec2 start = m_Transform->position + m_Transform->rotation * m_Radius;
+	//for (uint8_t i = 0; i < numebrOfRays; i++)
+	//{
+	//	glm::vec2 direction = m_Transform->rotation;
+	//	if (i != 0 && i % 2 == 0)
+	//	{
+	//		const float angle = raycastAngleStep * (float)((i + 1) / 2);
+	//		direction = Vector::Rotate(direction, -angle);
+	//	}
+	//	else if (i % 2 != 0)
+	//	{
+	//		const float angle = raycastAngleStep * (float)((i + 1) / 2);
+	//		direction = Vector::Rotate(direction, angle);
+	//	}
 
-		rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
-	}
+	//	rendererDebug.DrawLine(start, start + direction * raycastLength, Colour::red);
+	//}
 }

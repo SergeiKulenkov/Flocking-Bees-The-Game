@@ -5,7 +5,6 @@
 
 #include <Scene/Entity.h>
 #include <Scene/Component/Transform.h>
-#include <Scene/Component/Rigidbody.h>
 
 class BoidsManager;
 
@@ -27,6 +26,8 @@ public:
 	////////////////////
 
 	static inline bool isDrawingDebug = false;
+	// this is just to make wall avoidance easier while testing raycasting for obstacle avoidance
+	static inline glm::vec2 boundaries = glm::vec2(0.f, 0.f);
 
 protected:
 	BoidBase(const float minSpeed, const float maxSpeed, const float raycastLength)
@@ -46,12 +47,13 @@ protected:
 
 	void CheckWalls();
 	virtual void UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId) {}
+	void CheckBoundaries();
 
 	////////////////////
 
 	static constexpr uint8_t framesBetweenRaycast = 5;
 	static constexpr uint8_t numebrOfRays = 5;
-	static constexpr float raycastAngleStep = 0.262f;
+	static constexpr float raycastAngleStep = 0.349f;
 
 	// this should be set during Setup and reset to null when the manager is destroyed
 	// also useful if there are different teams with team managers, instead of using a static reference
@@ -67,9 +69,13 @@ protected:
 
 	uint8_t m_FrameCounter = 0;
 	float m_RaycastLength = 0.f;
-	bool rotateClockwise = false;
+	bool m_RotateClockwise = false;
 
 	std::shared_ptr<TransformData> m_Transform;
+
+	// temporary while testing raycasting for obstacle avoidance
+	float m_BoundariesAvoidanceSpeed = 0.f;
+	float m_EdgeMargin = 0.f;
 
 	friend class BoidsManager;
 };

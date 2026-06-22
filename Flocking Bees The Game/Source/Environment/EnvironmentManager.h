@@ -25,8 +25,8 @@ private:
 	////////////////////
 	static constexpr std::string_view backgroundImagePath = "../Assets/background.png";
 	static constexpr uint8_t numberOfBoundaries = 4;
-	static constexpr uint8_t numberOfStaticObstacles = 4;
-	static constexpr float stoneObstacleOffset = 100.f;
+	static constexpr uint8_t numberOfStaticObstacles = 10;
+	static constexpr float stoneObstacleOffset = 200.f;
 
 	// values are multiplied by screen size
 	static constexpr std::array<glm::vec2, numberOfBoundaries> boundaryPositions = { glm::vec2(0.5f, 0), glm::vec2(1, 0.5f), glm::vec2(0.5f, 1), glm::vec2(0, 0.5f) };

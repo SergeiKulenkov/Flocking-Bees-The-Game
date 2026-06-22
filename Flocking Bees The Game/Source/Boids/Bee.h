@@ -20,9 +20,9 @@ public:
 	Bee() : BoidBase(minSpeed, maxSpeed, raycastLength) {}
 
 	// not const so they can be edited in the debug window
-	static inline float perceptionRadius = 50.f;
-	static inline float separationRadius = 35.f;
-	static inline float predatorAvoidanceRadius = 130.f;
+	static inline float perceptionRadius = 70.f;
+	static inline float separationRadius = 50.f;
+	static inline float predatorAvoidanceRadius = 150.f;
 
 	static inline float perceptionRadiusMax = 100.f;
 	static inline float separationRadiusMax = 75.f;
@@ -39,10 +39,11 @@ protected:
 
 private:
 	static constexpr std::string_view beeImagePath = "../Assets/bee.png";
+	static constexpr float screenOffset = 300.f;
 
-	static constexpr float minSpeed = 70.f;
-	static constexpr float maxSpeed = 90.f;
-	static constexpr float rotationRate = 2.f;
+	static constexpr float minSpeed = 80.f;
+	static constexpr float maxSpeed = 100.f;
+	static constexpr float rotationRate = 3.5f;
 	static constexpr float raycastLength = 120.f;
 
 	static constexpr float alignmentWeight = 0.8f;
@@ -50,10 +51,9 @@ private:
 	static constexpr float separationWeight = 1.3f;
 	static constexpr float predatorAvoidanceWeight = 10.0f;
 
-	static constexpr float screenOffset = 300.f;
-	static constexpr float mass = 0.25f;
-	static constexpr float linearDamping = 0.1f;
-	static constexpr float restitution = 0.9f;
+	// temporary while testing raycasting for obstacle avoidance
+	static constexpr float boundaryAvoidanceSpeed = 5.f;
+	static constexpr float edgeMargin = 50.f;
 
 	glm::vec2 m_AlignmentForce = glm::vec2(0.f, 0.f);
 	glm::vec2 m_CohesionForce = glm::vec2(0.f, 0.f);

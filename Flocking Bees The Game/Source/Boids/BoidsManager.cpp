@@ -25,6 +25,7 @@ void BoidsManager::InitBoids(const glm::vec2& screenSize)
 	std::shared_ptr<Entity> newEntity;
 	m_Bees.reserve(numberOfBoids);
 	m_FlockingData.reserve(numberOfBoids);
+	BoidBase::boundaries = screenSize;
 
 	for (uint16_t id = 0; id < numberOfBoids; id++)
 	{

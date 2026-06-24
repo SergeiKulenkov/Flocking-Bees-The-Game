@@ -2,6 +2,7 @@
 
 #include <Scene/Scene.h>
 #include <Scene/Component/Transform.h>
+#include <Utility/Utility.h>
 
 #include "BoidsManager.h"
 
@@ -22,13 +23,13 @@ void Bee::Setup(const glm::vec2& screenSize, const uint16_t id, BoidsManager* ma
 void Bee::Update(float deltaTime)
 {
 	// TDOD: use a FSM
-	//if (m_State == BeeState::ObstacleAvoidance ||
-	//	m_FrameCounter == framesBetweenRaycast)
-	//{
-	//	CheckWalls();
-	//	m_FrameCounter = 0;
-	//}
-	//else m_FrameCounter++;
+	if (m_State == BeeState::ObstacleAvoidance ||
+		m_FrameCounter == framesBetweenRaycast)
+	{
+		CheckWalls();
+		m_FrameCounter = 0;
+	}
+	else m_FrameCounter++;
 
 	if (m_State == BeeState::Flocking)
 	{
@@ -132,6 +133,7 @@ void Bee::AvoidPredators()
 
 void Bee::UpdateObstacleAvoidance(const bool hitWall, const glm::vec2& rayContactPoint, const uint8_t rayId)
 {
+	if (hitWall) Debug::Log("dot = {}", glm::dot((m_Transform->position - rayContactPoint) * -1.f, m_Transform->rotation));
 	//if (hitWall)
 	//{
 	//	if (m_State != BeeState::ObstacleAvoidance)

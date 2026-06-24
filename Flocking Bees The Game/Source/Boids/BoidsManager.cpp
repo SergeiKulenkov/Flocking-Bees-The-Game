@@ -63,10 +63,10 @@ void BoidsManager::InitPredators(const glm::vec2& screenSize)
 
 void BoidsManager::RegisterDebugFields() const
 {
-	m_Scene->RegisterFieldInteger(numberOfBoidsText.data(), (int*)(&numberOfBoids));
-	m_Scene->RegisterEditableDebugWindowField(perceptionRadiusText.data(), &Bee::perceptionRadius, Bee::perceptionRadiusMax);
-	m_Scene->RegisterEditableDebugWindowField(separationRadiusText.data(), &Bee::separationRadius, Bee::separationRadiusMax);
-	m_Scene->RegisterEditableDebugWindowField(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius, Bee::predatorAvoidanceRadiusMax);
+	m_Scene->RegisterDebugFieldInteger(numberOfBoidsText.data(), (int*)(&numberOfBoids));
+	m_Scene->RegisterEditableDebugFieldFloat(perceptionRadiusText.data(), &Bee::perceptionRadius, Bee::perceptionRadiusMax);
+	m_Scene->RegisterEditableDebugFieldFloat(separationRadiusText.data(), &Bee::separationRadius, Bee::separationRadiusMax);
+	m_Scene->RegisterEditableDebugFieldFloat(predatorAvoidanceRadiusText.data(), &Bee::predatorAvoidanceRadius, Bee::predatorAvoidanceRadiusMax);
 	m_Scene->RegisterCheckbox(drawDebugInfoField, &BoidBase::isDrawingDebug);
 }
 

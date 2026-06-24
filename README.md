@@ -11,6 +11,8 @@ This is a modification of the Flocking Bees project, so now it has the Engine ba
 * checkbox that allows to enable/disable drawing some debug info for the boids and predators
 * frame time in the window and console
 
+![BasePreview](ReadmeVisuals/Preview.png)
+
 # Setup
 Simply run the Scripts/Setup.bat to generate project files and VS solution file.
 
